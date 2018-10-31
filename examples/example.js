@@ -1,24 +1,23 @@
-var EasyFit = require('./../dist/easy-fit.js').default;
-var fs = require('fs');
+let EasyFit = require('./../dist/main.bundle.js');
+let fs = require('fs');
 
-var file = process.argv[2];
+fs.readFile('./examples/example.fit', function (err, content) {
+  if (err) {
+    console.error(err);
+  }
+  else {
+    console.log('success reading file');
 
-fs.readFile(file, function (err, content) {
-  var easyFit = new EasyFit({
-    force: true,
-    speedUnit: 'km/h',
-    lengthUnit: 'm',
-    temperatureUnit: 'celsius',
-    elapsedRecordField: true,
-    mode: 'list',
-  });
+    const options = {
+      force: true,
+      speedUnit: 'km/h',
+      lengthUnit: 'm',
+      temperatureUnit: 'celsius',
+      elapsedRecordField: true,
+      mode: 'list',
+    };
 
-  easyFit.parse(content, function (error, data) {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log(JSON.stringify(data));
-      //console.log(data.records[0]);
-    }
-  });
+    const value = EasyFit.EasyFit(content, options);
+    console.log(value);
+  }
 });
