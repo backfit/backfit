@@ -1,6 +1,6 @@
 import { getArrayBuffer, calculateCRC, readRecord } from './binary';
 
-export default class FitParser {
+export default class BackFit {
   constructor(options = {}) {
     this.options = {
       force: options.force != null ? options.force : true,
