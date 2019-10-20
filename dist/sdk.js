@@ -4151,8 +4151,17 @@ function getMessageName(messageNum) {
 function getFieldObject(fieldNum, messageNum) {
     var message = FITSDK.messages[messageNum];
     if (!message) {
-        return {};
+        return {
+            type: "",
+            field: ""
+        };
     }
     var fieldObj = message[fieldNum];
+    if (!fieldObj) {
+        return {
+            type: "",
+            field: ""
+        };
+    }
     return fieldObj;
 }

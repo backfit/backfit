@@ -4150,8 +4150,17 @@ export function getFieldObject(fieldNum: number,
   messageNum: number): Message {
   const message = FITSDK.messages[messageNum];
   if (!message) {
-    return {};
+    return {
+      type: "",
+      field: "",
+    }
   }
-  const fieldObj = message[fieldNum];
+  const fieldObj = <Message>message[fieldNum];
+  if (!fieldObj) {
+    return {
+      type: "",
+      field: "",
+    }
+  }
   return fieldObj;
 }

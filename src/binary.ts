@@ -246,7 +246,7 @@ export function readRecord(blob: Uint8Array, messageTypes: MessageTypes,
     for (let i = 0; i < numberOfFields; i++) {
       const fDefIndex = startIndex + 6 + (i * 3);
       const baseType = blob[fDefIndex + 2];
-      const { field, type } = message.getAttributes(blob[fDefIndex]);
+      const { field, type } = message.getAttributes(blob[fDefIndex]); 
       const fDef = {
         type,
         fDefNo: blob[fDefIndex],
@@ -258,7 +258,7 @@ export function readRecord(blob: Uint8Array, messageTypes: MessageTypes,
         dataType: getFitMessageBaseType(baseType & 15),
       };
 
-      mTypeDef.fieldDefs.push(fDef);
+        mTypeDef.fieldDefs.push(fDef);
     }
 
     for (let i = 0; i < numberOfDeveloperDataFields; i++) {
