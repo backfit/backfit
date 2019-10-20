@@ -1,18 +1,32 @@
 import { getArrayBuffer, calculateCRC, readRecord } from './binary';
+import { DeveloperFields, FitParserOptions,
+  FitParserResult } from './types';
 
 export default class FitParser {
-  constructor(options = {}) {
-    this.options = {
-      force: options.force != null ? options.force : true,
-      speedUnit: options.speedUnit || 'm/s',
-      lengthUnit: options.lengthUnit || 'm',
-      temperatureUnit: options.temperatureUnit || 'celsius',
-      elapsedRecordField: options.elapsedRecordField || false,
-      mode: options.mode || 'list',
-    };
+
+  options: FitParserOptions = {
+    force: true,
+    speedUnit: 'm/s',
+    lengthUnit: 'm',
+    temperatureUnit: 'celsius',
+    elapsedRecordField: false,
+    mode: 'list',
   }
 
-  parse(content, callback) {
+  constructor(options: FitParserOptions = null) {
+    if (options) {
+      this.options = {
+        force: options.force != null ? options.force : true,
+        speedUnit: options.speedUnit || 'm/s',
+        lengthUnit: options.lengthUnit || 'm',
+        temperatureUnit: options.temperatureUnit || 'celsius',
+        elapsedRecordField: options.elapsedRecordField || false,
+        mode: options.mode || 'list',
+      };
+    }
+  }
+
+  parse(content: Buffer, callback: (string, object) => void) {
     const blob = new Uint8Array(getArrayBuffer(content));
 
     if (blob.length < 12) {
@@ -65,7 +79,7 @@ export default class FitParser {
       }
     }
 
-    const fitObj = {};
+    const fitObj:FitParserResult = {};
     const sessions = [];
     const laps = [];
     const records = [];
@@ -82,7 +96,7 @@ export default class FitParser {
 
     let loopIndex = headerLength;
     const messageTypes = [];
-    const developerFields = [];
+    const developerFields: DeveloperFields = [];
 
     const isModeCascade = this.options.mode === 'cascade';
     const isCascadeNeeded = isModeCascade || this.options.mode === 'both';
@@ -160,7 +174,7 @@ export default class FitParser {
     }
 
     if (isCascadeNeeded) {
-      fitObj.activity = fitObj.activity || {};
+      fitObj.activity = fitObj.activity || null;
       fitObj.activity.sessions = sessions;
       fitObj.activity.events = events;
       fitObj.activity.hrv = hrv;
@@ -181,3 +195,4 @@ export default class FitParser {
     callback(null, fitObj);
   }
 }
+

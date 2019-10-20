@@ -17,8 +17,8 @@ fs.readFile(file, function (err, content) {
     if (error) {
       console.log(error);
     } else {
-      console.log(JSON.stringify(data));
-      //console.log(data.records[0]);
+      // console.log(JSON.stringify(data));
+      console.log(data.records[0]);
     }
   });
 });

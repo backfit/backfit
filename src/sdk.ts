@@ -1,61 +1,56 @@
-'use strict';
+import { Message } from './types';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getMessageName = getMessageName;
-exports.getFieldObject = getFieldObject;
-var FIT = exports.FIT = {
-  scConst: 180 / Math.pow(2, 31),
+export const FITSDK = {
+  scConst: 180 / 2 ** 31,
   options: {
     speedUnits: {
       mph: {
         multiplier: 3.6 / 1.4,
-        offset: 0
+        offset: 0,
       },
       'km/h': {
         multiplier: 3.6,
-        offset: 0
-      }
+        offset: 0,
+      },
     },
     lengthUnits: {
       mi: {
         multiplier: 1 / 1609.344,
-        offset: 0
+        offset: 0,
       },
       km: {
         multiplier: 1 / 1000,
-        offset: 0
-      }
+        offset: 0,
+      },
     },
     temperatureUnits: {
       kelvin: {
         multiplier: 1,
-        offset: -273.15
+        offset: -273.15,
       },
       fahrenheit: {
         multiplier: 9 / 5,
-        offset: 32
-      }
-    }
+        offset: 32,
+      },
+    },
   },
   messages: {
     0: {
       name: 'file_id',
-      0: { field: 'type', type: 'file', scale: null, offset: '', units: '' },
+      0: { field: 'type', type: 'file', scale: null, offset: '', units: ''},
       1: { field: 'manufacturer', type: 'manufacturer', scale: null, offset: '', units: '' },
       2: { field: 'product', type: 'uint16', scale: null, offset: '', units: '' },
       3: { field: 'serial_number', type: 'uint32z', scale: null, offset: '', units: '' },
       4: { field: 'time_created', type: 'date_time', scale: null, offset: '', units: '' },
       5: { field: 'number', type: 'uint16', scale: null, offset: '', units: '' },
-      8: { field: 'product_name', type: 'string', scale: null, offset: '', units: '' }
+      8: { field: 'product_name', type: 'string', scale: null, offset: '', units: '' },
     },
     1: {
       name: 'capabilities',
       0: { field: 'languages', type: 'uint8z', scale: null, offset: '', units: '' },
       1: { field: 'sports', type: 'sport_bits_0', scale: null, offset: '', units: '' },
       21: { field: 'workouts_supported', type: 'workout_capabilities', scale: null, offset: '', units: '' },
-      23: { field: 'connectivity_supported', type: 'connectivity_capabilities', scale: null, offset: '', units: '' }
+      23: { field: 'connectivity_supported', type: 'connectivity_capabilities', scale: null, offset: '', units: '' },
     },
     2: {
       name: 'device_settings',
@@ -66,7 +61,7 @@ var FIT = exports.FIT = {
       55: { field: 'display_orientation', type: 'display_orientation', scale: null, offset: '', units: '' },
       56: { field: 'mounting_side', type: 'side', scale: null, offset: '', units: '' },
       94: { field: 'number_of_screens', type: 'uint8', scale: null, offset: '', units: '' },
-      95: { field: 'smart_notification_display_orientation', type: 'display_orientation', scale: null, offset: '', units: '' }
+      95: { field: 'smart_notification_display_orientation', type: 'display_orientation', scale: null, offset: '', units: '' },
     },
     3: {
       name: 'user_profile',
@@ -92,7 +87,7 @@ var FIT = exports.FIT = {
       21: { field: 'temperature_setting', type: 'display_measure', scale: null, offset: 0, units: '' },
       22: { field: 'local_id', type: 'user_local_id', scale: null, offset: 0, units: '' },
       23: { field: 'global_id', type: 'byte', scale: null, offset: 0, units: '' },
-      30: { field: 'height_setting', type: 'display_measure', scale: null, offset: 0, units: '' }
+      30: { field: 'height_setting', type: 'display_measure', scale: null, offset: 0, units: '' },
     },
     4: {
       name: 'hrm_profile',
@@ -100,7 +95,7 @@ var FIT = exports.FIT = {
       0: { field: 'enabled', type: 'bool', scale: null, offset: '', units: '' },
       1: { field: 'hrm_ant_id', type: 'uint16z', scale: null, offset: '', units: '' },
       2: { field: 'log_hrv', type: 'bool', scale: null, offset: '', units: '' },
-      3: { field: 'hrm_ant_id_trans_type', type: 'uint8z', scale: null, offset: '', units: '' }
+      3: { field: 'hrm_ant_id_trans_type', type: 'uint8z', scale: null, offset: '', units: '' },
     },
     5: {
       name: 'sdm_profile',
@@ -111,7 +106,7 @@ var FIT = exports.FIT = {
       3: { field: 'odometer', type: 'uint32', scale: 100, offset: '', units: 'm' },
       4: { field: 'speed_source', type: 'bool', scale: null, offset: '', units: '' },
       5: { field: 'sdm_ant_id_trans_type', type: 'uint8z', scale: null, offset: '', units: '' },
-      7: { field: 'odometer_rollover', type: 'uint8', scale: null, offset: '', units: '' }
+      7: { field: 'odometer_rollover', type: 'uint8', scale: null, offset: '', units: '' },
     },
     6: {
       name: 'bike_profile',
@@ -146,7 +141,7 @@ var FIT = exports.FIT = {
       39: { field: 'front_gear', type: 'uint8z', scale: null, offset: 0, units: '' },
       40: { field: 'rear_gear_num', type: 'uint8z', scale: null, offset: 0, units: '' },
       41: { field: 'rear_gear', type: 'uint8z', scale: null, offset: 0, units: '' },
-      44: { field: 'shimano_di2_enabled', type: 'bool', scale: null, offset: 0, units: '' }
+      44: { field: 'shimano_di2_enabled', type: 'bool', scale: null, offset: 0, units: '' },
     },
     7: {
       name: 'zones_target',
@@ -154,32 +149,32 @@ var FIT = exports.FIT = {
       2: { field: 'threshold_heart_rate', type: 'uint8', scale: null, offset: '', units: '' },
       3: { field: 'functional_threshold_power', type: 'uint16', scale: null, offset: '', units: '' },
       5: { field: 'hr_calc_type', type: 'hr_zone_calc', scale: null, offset: '', units: '' },
-      7: { field: 'pwr_calc_type', type: 'pwr_zone_calc', scale: null, offset: '', units: '' }
+      7: { field: 'pwr_calc_type', type: 'pwr_zone_calc', scale: null, offset: '', units: '' },
     },
     8: {
       name: 'hr_zone',
       254: { field: 'message_index', type: 'message_index', scale: null, offset: 0, units: '' },
       1: { field: 'high_bpm', type: 'uint8', scale: null, offset: 0, units: 'bpm' },
-      2: { field: 'name', type: 'string', scale: null, offset: 0, units: '' }
+      2: { field: 'name', type: 'string', scale: null, offset: 0, units: '' },
     },
     9: {
       name: 'power_zone',
       254: { field: 'message_index', type: 'message_index', scale: null, offset: 0, units: '' },
       1: { field: 'high_value', type: 'uint16', scale: null, offset: 0, units: 'watts' },
-      2: { field: 'name', type: 'string', scale: null, offset: 0, units: '' }
+      2: { field: 'name', type: 'string', scale: null, offset: 0, units: '' },
     },
     10: {
       name: 'met_zone',
       254: { field: 'message_index', type: 'message_index', scale: null, offset: 0, units: '' },
       1: { field: 'high_bpm', type: 'uint8', scale: null, offset: 0, units: '' },
       2: { field: 'calories', type: 'uint16', scale: 10, offset: 0, units: 'kcal / min' },
-      3: { field: 'fat_calories', type: 'uint8', scale: 10, offset: 0, units: 'kcal / min' }
+      3: { field: 'fat_calories', type: 'uint8', scale: 10, offset: 0, units: 'kcal / min' },
     },
     12: {
       name: 'sport',
       0: { field: 'sport', type: 'sport', scale: null, offset: '', units: '' },
       1: { field: 'sub_sport', type: 'sub_sport', scale: null, offset: '', units: '' },
-      3: { field: 'name', type: 'string', scale: null, offset: '', units: '' }
+      3: { field: 'name', type: 'string', scale: null, offset: '', units: '' },
     },
     15: {
       name: 'goal',
@@ -194,7 +189,7 @@ var FIT = exports.FIT = {
       7: { field: 'target_value', type: 'uint32', scale: null, offset: '', units: '' },
       8: { field: 'recurrence', type: 'goal_recurrence', scale: null, offset: '', units: '' },
       9: { field: 'recurrence_value', type: 'uint16', scale: null, offset: '', units: '' },
-      10: { field: 'enabled', type: 'bool', scale: null, offset: '', units: '' }
+      10: { field: 'enabled', type: 'bool', scale: null, offset: '', units: '' },
     },
     18: {
       name: 'session',
@@ -316,7 +311,7 @@ var FIT = exports.FIT = {
       133: { field: 'avg_stance_time_balance', type: 'uint16', scale: 100, offset: 0, units: 'percent' },
       134: { field: 'avg_step_length', type: 'uint16', scale: 10, offset: 0, units: 'mm' },
       137: { field: 'total_anaerobic_effect', type: 'uint8', scale: 10, offset: 0, units: '' },
-      139: { field: 'avg_vam', type: 'uint16', scale: 1000, offset: 0, units: 'm/s' }
+      139: { field: 'avg_vam', type: 'uint16', scale: 1000, offset: 0, units: 'm/s' },
     },
     19: {
       name: 'lap',
@@ -425,7 +420,7 @@ var FIT = exports.FIT = {
       118: { field: 'avg_vertical_ratio', type: 'uint16', scale: 100, offset: 0, units: 'percent' },
       119: { field: 'avg_stance_time_balance', type: 'uint16', scale: 100, offset: 0, units: 'percent' },
       120: { field: 'avg_step_length', type: 'uint16', scale: 10, offset: 0, units: 'mm' },
-      121: { field: 'avg_vam', type: 'uint16', scale: 1000, offset: 0, units: 'm/s' }
+      121: { field: 'avg_vam', type: 'uint16', scale: 1000, offset: 0, units: 'm/s' },
     },
     20: {
       name: 'record',
@@ -485,7 +480,7 @@ var FIT = exports.FIT = {
       78: { field: 'enhanced_altitude', type: 'uint32', scale: 5, offset: -500, units: 'm' },
       81: { field: 'battery_soc', type: 'uint8', scale: 2, offset: 0, units: 'percent' },
       82: { field: 'motor_power', type: 'uint16', scale: null, offset: 0, units: 'watts' },
-      83: { field: 'vertical_ratio', type: 'uint16', scale: 100, offset: 0, units: 'percent' },
+      83: { field: 'vertical_ratio', type: 'uint16', scale: 100, offset: 0, units: 'percent'},
       84: { field: 'stance_time_balance', type: 'uint16', scale: 100, offset: 0, units: 'percent' },
       85: { field: 'step_length', type: 'uint16', scale: 10, offset: 0, units: 'mm' },
       91: { field: 'absolute_pressure', type: 'uint32', scale: null, offset: 0, units: 'Pa' },
@@ -511,7 +506,7 @@ var FIT = exports.FIT = {
       10: { field: 'front_gear', type: 'uint8z', scale: null, offset: '', units: '' },
       11: { field: 'rear_gear_num', type: 'uint8z', scale: null, offset: '', units: '' },
       12: { field: 'rear_gear', type: 'uint8z', scale: null, offset: '', units: '' },
-      13: { field: 'device_index', type: 'device_index', scale: null, offset: '', units: '' }
+      13: { field: 'device_index', type: 'device_index', scale: null, offset: '', units: '' },
     },
     23: {
       name: 'device_info',
@@ -532,14 +527,14 @@ var FIT = exports.FIT = {
       21: { field: 'ant_device_number', type: 'uint16z', scale: null, offset: 0, units: '' },
       22: { field: 'ant_network', type: 'ant_network', scale: null, offset: 0, units: '' },
       25: { field: 'source_type', type: 'source_type', scale: null, offset: 0, units: '' },
-      27: { field: 'product_name', type: 'string', scale: null, offset: 0, units: '' }
+      27: { field: 'product_name', type: 'string', scale: null, offset: 0, units: '' },
     },
     26: {
       name: 'workout',
       4: { field: 'sport', type: 'sport', scale: null, offset: '', units: '' },
       5: { field: 'capabilities', type: 'workout_capabilities', scale: null, offset: '', units: '' },
       6: { field: 'num_valid_steps', type: 'uint16', scale: null, offset: '', units: '' },
-      8: { field: 'wkt_name', type: 'string', scale: null, offset: '', units: '' }
+      8: { field: 'wkt_name', type: 'string', scale: null, offset: '', units: '' },
     },
     27: {
       name: 'workout_step',
@@ -551,7 +546,7 @@ var FIT = exports.FIT = {
       4: { field: 'target_value', type: 'uint32', scale: null, offset: 0, units: '' },
       5: { field: 'custom_target_value_low', type: 'uint32', scale: null, offset: 0, units: '' },
       6: { field: 'custom_target_value_high', type: 'uint32', scale: null, offset: 0, units: '' },
-      7: { field: 'intensity', type: 'intensity', scale: null, offset: 0, units: '' }
+      7: { field: 'intensity', type: 'intensity', scale: null, offset: 0, units: '' },
     },
     30: {
       name: 'weight_scale',
@@ -567,13 +562,13 @@ var FIT = exports.FIT = {
       9: { field: 'active_met', type: 'uint16', scale: 4, offset: 0, units: 'kcal/day' },
       10: { field: 'metabolic_age', type: 'uint8', scale: null, offset: 0, units: 'years' },
       11: { field: 'visceral_fat_rating', type: 'uint8', scale: null, offset: 0, units: '' },
-      12: { field: 'user_profile_index', type: 'message_index', scale: null, offset: 0, units: '' }
+      12: { field: 'user_profile_index', type: 'message_index', scale: null, offset: 0, units: '' },
     },
     31: {
       name: 'course',
       4: { field: 'sport', type: 'sport', scale: null, offset: '', units: '' },
       5: { field: 'name', type: 'string', scale: null, offset: '', units: '' },
-      6: { field: 'capabilities', type: 'course_capabilities', scale: null, offset: '', units: '' }
+      6: { field: 'capabilities', type: 'course_capabilities', scale: null, offset: '', units: '' },
     },
     32: {
       name: 'course_point',
@@ -584,7 +579,7 @@ var FIT = exports.FIT = {
       4: { field: 'distance', type: 'uint32', scale: 100, offset: 0, units: 'm' },
       5: { field: 'type', type: 'course_point', scale: null, offset: 0, units: '' },
       6: { field: 'name', type: 'string', scale: null, offset: 0, units: '' },
-      8: { field: 'favorite', type: 'bool', scale: null, offset: 0, units: '' }
+      8: { field: 'favorite', type: 'bool', scale: null, offset: 0, units: '' },
     },
     33: {
       name: 'totals',
@@ -597,7 +592,7 @@ var FIT = exports.FIT = {
       4: { field: 'elapsed_time', type: 'uint32', scale: null, offset: 0, units: 's' },
       5: { field: 'sessions', type: 'uint16', scale: null, offset: 0, units: '' },
       6: { field: 'active_time', type: 'uint32', scale: null, offset: 0, units: 's' },
-      9: { field: 'sport_index', type: 'uint8', scale: null, offset: 0, units: '' }
+      9: { field: 'sport_index', type: 'uint8', scale: null, offset: 0, units: '' },
     },
     34: {
       name: 'activity',
@@ -608,13 +603,13 @@ var FIT = exports.FIT = {
       3: { field: 'event', type: 'event', scale: null, offset: 0, units: '' },
       4: { field: 'event_type', type: 'event_type', scale: null, offset: 0, units: '' },
       5: { field: 'local_timestamp', type: 'local_date_time', scale: null, offset: 0, units: '' },
-      6: { field: 'event_group', type: 'uint8', scale: null, offset: 0, units: '' }
+      6: { field: 'event_group', type: 'uint8', scale: null, offset: 0, units: '' },
     },
     35: {
       name: 'software',
       254: { field: 'message_index', type: 'message_index', scale: null, offset: '', units: '' },
       3: { field: 'version', type: 'uint16', scale: 100, offset: '', units: '' },
-      5: { field: 'part_number', type: 'string', scale: null, offset: '', units: '' }
+      5: { field: 'part_number', type: 'string', scale: null, offset: '', units: '' },
     },
     37: {
       name: 'file_capabilities',
@@ -623,7 +618,7 @@ var FIT = exports.FIT = {
       1: { field: 'flags', type: 'file_flags', scale: null, offset: 0, units: '' },
       2: { field: 'directory', type: 'string', scale: null, offset: 0, units: '' },
       3: { field: 'max_count', type: 'uint16', scale: null, offset: 0, units: '' },
-      4: { field: 'max_size', type: 'uint32', scale: null, offset: 0, units: 'bytes' }
+      4: { field: 'max_size', type: 'uint32', scale: null, offset: 0, units: 'bytes' },
     },
     38: {
       name: 'mesg_capabilities',
@@ -631,7 +626,7 @@ var FIT = exports.FIT = {
       0: { field: 'file', type: 'file', scale: null, offset: '', units: '' },
       1: { field: 'mesg_num', type: 'mesg_num', scale: null, offset: '', units: '' },
       2: { field: 'count_type', type: 'mesg_count', scale: null, offset: '', units: '' },
-      3: { field: 'count', type: 'uint16', scale: null, offset: '', units: '' }
+      3: { field: 'count', type: 'uint16', scale: null, offset: '', units: '' },
     },
     39: {
       name: 'field_capabilities',
@@ -639,12 +634,12 @@ var FIT = exports.FIT = {
       0: { field: 'file', type: 'file', scale: null, offset: '', units: '' },
       1: { field: 'mesg_num', type: 'mesg_num', scale: null, offset: '', units: '' },
       2: { field: 'field_num', type: 'uint8', scale: null, offset: '', units: '' },
-      3: { field: 'count', type: 'uint16', scale: null, offset: '', units: '' }
+      3: { field: 'count', type: 'uint16', scale: null, offset: '', units: '' },
     },
     49: {
       name: 'file_creator',
       0: { field: 'software_version', type: 'uint16', scale: null, offset: '', units: '' },
-      1: { field: 'hardware_version', type: 'uint8', scale: null, offset: '', units: '' }
+      1: { field: 'hardware_version', type: 'uint8', scale: null, offset: '', units: '' },
     },
     51: {
       name: 'blood_pressure',
@@ -658,11 +653,11 @@ var FIT = exports.FIT = {
       6: { field: 'heart_rate', type: 'uint8', scale: null, offset: 0, units: 'bpm' },
       7: { field: 'heart_rate_type', type: 'hr_type', scale: null, offset: 0, units: '' },
       8: { field: 'status', type: 'bp_status', scale: null, offset: 0, units: '' },
-      9: { field: 'user_profile_index', type: 'message_index', scale: null, offset: 0, units: '' }
+      9: { field: 'user_profile_index', type: 'message_index', scale: null, offset: 0, units: '' },
     },
     78: {
       name: 'hrv',
-      0: { field: 'time', type: 'uint16_array', scale: 1000, offset: 0, units: 's' }
+      0: { field: 'time', type: 'uint16_array', scale: 1000, offset: 0, units: 's' },
     },
     206: {
       name: 'field_description',
@@ -679,7 +674,7 @@ var FIT = exports.FIT = {
       // 10: { field: 'accumulate', type: 'string', scale: null, offset: 0, units: '' },
       //13: { field: 'fit_base_unit_id', type: 'uint16', scale: null, offset: 0, units: '' },
       // 14: { field: 'native_mesg_num', type: 'mesg_num', scale: null, offset: 0, units: '' },
-      15: { field: 'native_field_num', type: 'uint8', scale: null, offset: 0, units: '' }
+      15: { field: 'native_field_num', type: 'uint8', scale: null, offset: 0, units: '' },
     },
     207: {
       name: 'developer_data_id',
@@ -714,7 +709,7 @@ var FIT = exports.FIT = {
       19: { field: 'heart_rate_source_type', type: 'source_type', scale: null, offset: 0, units: '' },
       20: { field: 'heart_rate_source', type: 'uint8', scale: null, offset: 0, units: '' }
     },
-    259: {
+    259 : {
       name: 'dive_gas',
       254: { field: 'message_index', type: 'message_index', scale: null, offset: '', units: '' },
       0: { field: 'helium_content', type: 'uint8', scale: null, offset: '', units: 'percent' },
@@ -734,19 +729,19 @@ var FIT = exports.FIT = {
     268: {
       name: 'dive_summary',
       253: { field: 'timestamp', type: 'date_time', scale: null, offset: 0, units: 's' },
-      0: { field: 'reference_mesg', type: 'mesg_num', scale: null, offset: 0, units: '' },
-      1: { field: 'reference_index', type: 'message_index', scale: null, offset: 0, units: '' },
-      2: { field: 'avg_depth', type: 'uint32', scale: null, offset: 0, units: 'm' },
-      3: { field: 'max_depth', type: 'uint32', scale: null, offset: 0, units: 'm' },
-      4: { field: 'surface_interval', type: 'uint32', scale: null, offset: 0, units: 's' },
-      5: { field: 'start_cns', type: 'uint8', scale: null, offset: 0, units: 'percent' },
-      6: { field: 'end_cns', type: 'uint8', scale: null, offset: 0, units: 'percent' },
-      7: { field: 'start_n2', type: 'uint16', scale: null, offset: 0, units: 'percent' },
-      8: { field: 'end_n2', type: 'uint16', scale: null, offset: 0, units: 'percent' },
-      9: { field: 'o2_toxicity', type: 'uint16', scale: null, offset: 0, units: 'OTUs' },
-      10: { field: 'dive_number', type: 'uint32', scale: null, offset: 0, units: '' },
-      11: { field: 'bottom_time', type: 'uint32', scale: null, offset: 0, units: 's' }
-    }
+      0: { field: 'reference_mesg', type: 'mesg_num', scale: null, offset: 0, units: ''},
+      1: { field: 'reference_index', type: 'message_index', scale: null, offset: 0, units: ''},
+      2: { field: 'avg_depth', type: 'uint32', scale: null, offset: 0, units: 'm'},
+      3: { field: 'max_depth', type: 'uint32', scale: null, offset: 0, units: 'm'},
+      4: { field: 'surface_interval', type: 'uint32', scale: null, offset: 0, units: 's'},
+      5: { field: 'start_cns', type: 'uint8', scale: null, offset: 0, units: 'percent'},
+      6: { field: 'end_cns', type: 'uint8', scale: null, offset: 0, units: 'percent'},
+      7: { field: 'start_n2', type: 'uint16', scale: null, offset: 0, units: 'percent'},
+      8: { field: 'end_n2', type: 'uint16', scale: null, offset: 0, units: 'percent'},
+      9: { field: 'o2_toxicity', type: 'uint16', scale: null, offset: 0, units: 'OTUs'},
+      10: { field: 'dive_number', type: 'uint32', scale: null, offset: 0, units: ''},
+      11: { field: 'bottom_time', type: 'uint32', scale: null, offset: 0, units: 's'}
+    },
   },
   types: {
     file: {
@@ -769,7 +764,7 @@ var FIT = exports.FIT = {
       35: 'segment_list',
       40: 'exd_configuration',
       247: 'mfg_range_min',
-      254: 'mfg_range_max'
+      254: 'mfg_range_max',
     },
     mesg_num: {
       0: 'file_id',
@@ -858,40 +853,40 @@ var FIT = exports.FIT = {
       264: 'exercise_title',
       268: 'dive_summary',
       65280: 'mfg_range_min',
-      65534: 'mfg_range_max'
+      65534: 'mfg_range_max',
     },
     checksum: {
       0: 'clear',
-      1: 'ok'
+      1: 'ok',
     },
     file_flags: {
       0: 0,
       2: 'read',
       4: 'write',
-      8: 'erase'
+      8: 'erase',
     },
     mesg_count: {
       0: 'num_per_file',
       1: 'max_per_file',
-      2: 'max_per_file_type'
+      2: 'max_per_file_type',
     },
     date_time: {
       0: 0,
-      268435456: 'min'
+      268435456: 'min',
     },
     local_date_time: {
       0: 0,
-      268435456: 'min'
+      268435456: 'min',
     },
     message_index: {
       0: 0,
       4095: 'mask',
       28672: 'reserved',
-      32768: 'selected'
+      32768: 'selected',
     },
     gender: {
       0: 'female',
-      1: 'male'
+      1: 'male',
     },
     language: {
       0: 'english',
@@ -932,7 +927,7 @@ var FIT = exports.FIT = {
       35: 'vietnamese',
       36: 'burmese',
       37: 'mongolian',
-      254: 'custom'
+      254: 'custom',
     },
     language_bits_0: {
       0: 0,
@@ -943,7 +938,7 @@ var FIT = exports.FIT = {
       16: 'spanish',
       32: 'croatian',
       64: 'czech',
-      128: 'danish'
+      128: 'danish',
     },
     language_bits_1: {
       0: 0,
@@ -965,7 +960,7 @@ var FIT = exports.FIT = {
       16: 'latvian',
       32: 'ukrainian',
       64: 'arabic',
-      128: 'farsi'
+      128: 'farsi',
     },
     language_bits_3: {
       0: 0,
@@ -976,7 +971,7 @@ var FIT = exports.FIT = {
       16: 'korean',
       32: 'taiwanese',
       64: 'thai',
-      128: 'hebrew'
+      128: 'hebrew',
     },
     language_bits_4: {
       0: 0,
@@ -985,7 +980,7 @@ var FIT = exports.FIT = {
       4: 'malaysian',
       8: 'vietnamese',
       16: 'burmese',
-      32: 'mongolian'
+      32: 'mongolian',
     },
     time_zone: {
       0: 'almaty',
@@ -1093,21 +1088,21 @@ var FIT = exports.FIT = {
       102: 'australia_lh',
       103: 'santiago',
       253: 'manual',
-      254: 'automatic'
+      254: 'automatic',
     },
     display_measure: {
       0: 'metric',
       1: 'statute',
-      2: 'nautical'
+      2: 'nautical',
     },
     display_heart: {
       0: 'bpm',
       1: 'max',
-      2: 'reserve'
+      2: 'reserve',
     },
     display_power: {
       0: 'watts',
-      1: 'percent_ftp'
+      1: 'percent_ftp',
     },
     display_position: {
       0: 'degree',
@@ -1156,7 +1151,7 @@ var FIT = exports.FIT = {
     switch: {
       0: 'off',
       1: 'on',
-      2: 'auto'
+      2: 'auto',
     },
     sport: {
       0: 'generic',
@@ -1209,7 +1204,7 @@ var FIT = exports.FIT = {
       47: 'boxing',
       48: 'floor_climbing',
       53: 'diving',
-      254: 'all'
+      254: 'all',
     },
     sport_bits_0: {
       0: 0,
@@ -1220,7 +1215,7 @@ var FIT = exports.FIT = {
       16: 'fitness_equipment',
       32: 'swimming',
       64: 'basketball',
-      128: 'soccer'
+      128: 'soccer',
     },
     sport_bits_1: {
       0: 0,
@@ -1231,7 +1226,7 @@ var FIT = exports.FIT = {
       16: 'cross_country_skiing',
       32: 'alpine_skiing',
       64: 'snowboarding',
-      128: 'rowing'
+      128: 'rowing',
     },
     sport_bits_2: {
       0: 0,
@@ -1242,7 +1237,7 @@ var FIT = exports.FIT = {
       16: 'flying',
       32: 'e_biking',
       64: 'motorcycling',
-      128: 'boating'
+      128: 'boating',
     },
     sport_bits_3: {
       0: 0,
@@ -1253,7 +1248,7 @@ var FIT = exports.FIT = {
       16: 'hunting',
       32: 'fishing',
       64: 'inline_skating',
-      128: 'rock_climbing'
+      128: 'rock_climbing',
     },
     sport_bits_4: {
       0: 0,
@@ -1264,7 +1259,7 @@ var FIT = exports.FIT = {
       16: 'snowmobiling',
       32: 'stand_up_paddleboarding',
       64: 'surfing',
-      128: 'wakeboarding'
+      128: 'wakeboarding',
     },
     sport_bits_5: {
       0: 0,
@@ -1275,11 +1270,11 @@ var FIT = exports.FIT = {
       16: 'kitesurfing',
       32: 'tactical',
       64: 'jumpmaster',
-      128: 'boxing'
+      128: 'boxing',
     },
     sport_bits_6: {
       0: 0,
-      1: 'floor_climbing'
+      1: 'floor_climbing',
     },
     sub_sport: {
       0: 'generic',
@@ -1342,7 +1337,7 @@ var FIT = exports.FIT = {
       57: 'apnea_hunting',
       58: 'virtual_activity',
       59: 'obstacle',
-      254: 'all'
+      254: 'all',
     },
     sport_event: {
       0: 'uncategorized',
@@ -1353,23 +1348,23 @@ var FIT = exports.FIT = {
       5: 'special_event',
       6: 'training',
       7: 'transportation',
-      8: 'touring'
+      8: 'touring',
     },
     activity: {
       0: 'manual',
-      1: 'auto_multi_sport'
+      1: 'auto_multi_sport',
     },
     intensity: {
       0: 'active',
       1: 'rest',
       2: 'warmup',
-      3: 'cooldown'
+      3: 'cooldown',
     },
     session_trigger: {
       0: 'activity_end',
       1: 'manual',
       2: 'auto_multi_sport',
-      3: 'fitness_equipment'
+      3: 'fitness_equipment',
     },
     autolap_trigger: {
       0: 'time',
@@ -1378,7 +1373,7 @@ var FIT = exports.FIT = {
       3: 'position_lap',
       4: 'position_waypoint',
       5: 'position_marked',
-      6: 'off'
+      6: 'off',
     },
     lap_trigger: {
       0: 'manual',
@@ -1389,7 +1384,7 @@ var FIT = exports.FIT = {
       5: 'position_waypoint',
       6: 'position_marked',
       7: 'session_end',
-      8: 'fitness_equipment'
+      8: 'fitness_equipment',
     },
     time_mode: {
       0: 'hour12',
@@ -1406,14 +1401,14 @@ var FIT = exports.FIT = {
       3: 'auto_brightness',
       4: 'smart_notifications',
       5: 'key_and_messages_night',
-      6: 'key_and_messages_and_smart_notifications'
+      6: 'key_and_messages_and_smart_notifications',
     },
     date_mode: {
       0: 'day_month',
-      1: 'month_day'
+      1: 'month_day',
     },
     backlight_timeout: {
-      0: 'infinite'
+      0: 'infinite',
     },
     event: {
       0: 'timer',
@@ -1451,7 +1446,7 @@ var FIT = exports.FIT = {
       44: 'rider_position_change',
       45: 'elev_high_alert',
       46: 'elev_low_alert',
-      47: 'comm_timeout'
+      47: 'comm_timeout',
     },
     event_type: {
       0: 'start',
@@ -1463,45 +1458,45 @@ var FIT = exports.FIT = {
       6: 'end_depreciated',
       7: 'end_all_depreciated',
       8: 'stop_disable',
-      9: 'stop_disable_all'
+      9: 'stop_disable_all',
     },
     timer_trigger: {
       0: 'manual',
       1: 'auto',
-      2: 'fitness_equipment'
+      2: 'fitness_equipment',
     },
     fitness_equipment_state: {
       0: 'ready',
       1: 'in_use',
       2: 'paused',
-      3: 'unknown'
+      3: 'unknown',
     },
     tone: {
       0: 'off',
       1: 'tone',
       2: 'vibrate',
-      3: 'tone_and_vibrate'
+      3: 'tone_and_vibrate',
     },
     autoscroll: {
       0: 'none',
       1: 'slow',
       2: 'medium',
-      3: 'fast'
+      3: 'fast',
     },
     activity_class: {
       0: 0,
       100: 'level_max',
       127: 'level',
-      128: 'athlete'
+      128: 'athlete',
     },
     hr_zone_calc: {
       0: 'custom',
       1: 'percent_max_hr',
-      2: 'percent_hrr'
+      2: 'percent_hrr',
     },
     pwr_zone_calc: {
       0: 'custom',
-      1: 'percent_ftp'
+      1: 'percent_ftp',
     },
     wkt_step_duration: {
       0: 'time',
@@ -1549,7 +1544,7 @@ var FIT = exports.FIT = {
       10: 'power_lap',
       11: 'swim_stroke',
       12: 'speed_lap',
-      13: 'heart_rate_lap'
+      13: 'heart_rate_lap',
     },
     goal: {
       0: 'time',
@@ -1558,7 +1553,7 @@ var FIT = exports.FIT = {
       3: 'frequency',
       4: 'steps',
       5: 'ascent',
-      6: 'active_minutes'
+      6: 'active_minutes',
     },
     goal_recurrence: {
       0: 'off',
@@ -1566,16 +1561,16 @@ var FIT = exports.FIT = {
       2: 'weekly',
       3: 'monthly',
       4: 'yearly',
-      5: 'custom'
+      5: 'custom',
     },
     goal_source: {
       0: 'auto',
       1: 'community',
-      2: 'user'
+      2: 'user',
     },
     schedule: {
       0: 'workout',
-      1: 'course'
+      1: 'course',
     },
     course_point: {
       0: 'generic',
@@ -1603,7 +1598,7 @@ var FIT = exports.FIT = {
       22: 'sharp_right',
       23: 'u_turn',
       24: 'segment_start',
-      25: 'segment_end'
+      25: 'segment_end',
     },
     manufacturer: {
       0: 0,
@@ -1770,7 +1765,7 @@ var FIT = exports.FIT = {
       294: 'coros',
       295: 'virtugo',
       296: 'velosense',
-      5759: 'actigraphcorp'
+      5759: 'actigraphcorp',
     },
     garmin_product: {
       0: 'hrm_bike',
@@ -1931,7 +1926,7 @@ var FIT = exports.FIT = {
       20119: 'training_center',
       65531: 'connectiq_simulator',
       65532: 'android_antplus_plugin',
-      65534: 'connect'
+      65534: 'connect',
     },
     antplus_device_type: {
       0: 0,
@@ -1957,13 +1952,13 @@ var FIT = exports.FIT = {
       121: 'bike_speed_cadence',
       122: 'bike_cadence',
       123: 'bike_speed',
-      124: 'stride_speed_distance'
+      124: 'stride_speed_distance',
     },
     ant_network: {
       0: 'public',
       1: 'antplus',
       2: 'antfs',
-      3: 'private'
+      3: 'private',
     },
     workout_capabilities: {
       0: 0,
@@ -1980,7 +1975,7 @@ var FIT = exports.FIT = {
       2048: 'power',
       4096: 'grade',
       8192: 'resistance',
-      16384: 'protected'
+      16384: 'protected',
     },
     battery_status: {
       0: 0,
@@ -1990,11 +1985,11 @@ var FIT = exports.FIT = {
       4: 'low',
       5: 'critical',
       6: 'charging',
-      7: 'unknown'
+      7: 'unknown',
     },
     hr_type: {
       0: 'normal',
-      1: 'irregular'
+      1: 'irregular',
     },
     course_capabilities: {
       0: 0,
@@ -2008,26 +2003,26 @@ var FIT = exports.FIT = {
       128: 'cadence',
       256: 'training',
       512: 'navigation',
-      1024: 'bikeway'
+      1024: 'bikeway',
     },
     weight: {
       0: 0,
-      65534: 'calculating'
+      65534: 'calculating',
     },
     workout_hr: {
       0: 0,
-      100: 'bpm_offset'
+      100: 'bpm_offset',
     },
     workout_power: {
       0: 0,
-      1000: 'watts_offset'
+      1000: 'watts_offset',
     },
     bp_status: {
       0: 'no_error',
       1: 'error_incomplete_data',
       2: 'error_no_measurement',
       3: 'error_data_out_of_range',
-      4: 'error_irregular_heart_rate'
+      4: 'error_irregular_heart_rate',
     },
     user_local_id: {
       0: 'local_min',
@@ -2035,7 +2030,7 @@ var FIT = exports.FIT = {
       16: 'stationary_min',
       255: 'stationary_max',
       256: 'portable_min',
-      65534: 'portable_max'
+      65534: 'portable_max',
     },
     swim_stroke: {
       0: 'freestyle',
@@ -2044,7 +2039,7 @@ var FIT = exports.FIT = {
       3: 'butterfly',
       4: 'drill',
       5: 'mixed',
-      6: 'im'
+      6: 'im',
     },
     activity_type: {
       0: 'generic',
@@ -2077,30 +2072,30 @@ var FIT = exports.FIT = {
       16: 'stair_climbing',
       17: 'lap_swimming',
       18: 'open_water',
-      254: 'all'
+      254: 'all',
     },
     activity_level: {
       0: 'low',
       1: 'medium',
-      2: 'high'
+      2: 'high',
     },
     side: {
       0: 'right',
-      1: 'left'
+      1: 'left',
     },
     left_right_balance: {
       0: 0,
       127: 'mask',
-      128: 'right'
+      128: 'right',
     },
     left_right_balance_100: {
       0: 0,
       16383: 'mask',
-      32768: 'right'
+      32768: 'right',
     },
     length_type: {
       0: 'idle',
-      1: 'active'
+      1: 'active',
     },
     day_of_week: {
       0: 'sunday',
@@ -2109,7 +2104,7 @@ var FIT = exports.FIT = {
       3: 'wednesday',
       4: 'thursday',
       5: 'friday',
-      6: 'saturday'
+      6: 'saturday',
     },
     connectivity_capabilities: {
       0: 0,
@@ -2144,7 +2139,7 @@ var FIT = exports.FIT = {
       268435456: 'remote_manual_sync',
       536870912: 'live_track_auto_start',
       1073741824: 'live_track_messaging',
-      2147483648: 'instant_input'
+      2147483648: 'instant_input',
     },
     weather_report: {
       0: 'current',
@@ -2172,14 +2167,14 @@ var FIT = exports.FIT = {
       19: 'heavy_snow',
       20: 'light_rain_snow',
       21: 'heavy_rain_snow',
-      22: 'cloudy'
+      22: 'cloudy',
     },
     weather_severity: {
       0: 'unknown',
       1: 'warning',
       2: 'watch',
       3: 'advisory',
-      4: 'statement'
+      4: 'statement',
     },
     weather_severe_type: {
       0: 'unspecified',
@@ -2266,7 +2261,7 @@ var FIT = exports.FIT = {
       81: 'air_stagnation',
       82: 'low_water',
       83: 'hydrological',
-      84: 'special_weather'
+      84: 'special_weather',
     },
     stroke_type: {
       0: 'no_event',
@@ -2274,7 +2269,7 @@ var FIT = exports.FIT = {
       2: 'serve',
       3: 'forehand',
       4: 'backhand',
-      5: 'smash'
+      5: 'smash',
     },
     body_location: {
       0: 'left_leg',
@@ -2316,11 +2311,11 @@ var FIT = exports.FIT = {
       36: 'waist_mid_back',
       37: 'waist_front',
       38: 'waist_left',
-      39: 'waist_right'
+      39: 'waist_right',
     },
     segment_lap_status: {
       0: 'end',
-      1: 'fail'
+      1: 'fail',
     },
     segment_leaderboard_type: {
       0: 'overall',
@@ -2333,16 +2328,16 @@ var FIT = exports.FIT = {
       7: 'pr',
       8: 'goal',
       9: 'rival',
-      10: 'club_leader'
+      10: 'club_leader',
     },
     segment_delete_status: {
       0: 'do_not_delete',
       1: 'delete_one',
-      2: 'delete_all'
+      2: 'delete_all',
     },
     segment_selection_type: {
       0: 'starred',
-      1: 'suggested'
+      1: 'suggested',
     },
     source_type: {
       0: 'ant',
@@ -2350,14 +2345,14 @@ var FIT = exports.FIT = {
       2: 'bluetooth',
       3: 'bluetooth_low_energy',
       4: 'wifi',
-      5: 'local'
+      5: 'local',
     },
     display_orientation: {
       0: 'auto',
       1: 'portrait',
       2: 'landscape',
       3: 'portrait_flipped',
-      4: 'landscape_flipped'
+      4: 'landscape_flipped',
     },
     workout_equipment: {
       0: 'none',
@@ -2365,35 +2360,35 @@ var FIT = exports.FIT = {
       2: 'swim_kickboard',
       3: 'swim_paddles',
       4: 'swim_pull_buoy',
-      5: 'swim_snorkel'
+      5: 'swim_snorkel',
     },
     watchface_mode: {
       0: 'digital',
       1: 'analog',
       2: 'connect_iq',
-      3: 'disabled'
+      3: 'disabled',
     },
     digital_watchface_layout: {
       0: 'traditional',
       1: 'modern',
-      2: 'bold'
+      2: 'bold',
     },
     analog_watchface_layout: {
       0: 'minimal',
       1: 'traditional',
-      2: 'modern'
+      2: 'modern',
     },
     rider_position_type: {
       0: 'seated',
       1: 'standing',
       2: 'transition_to_seated',
-      3: 'transition_to_standing'
+      3: 'transition_to_standing',
     },
     power_phase_type: {
       0: 'power_phase_start_angle',
       1: 'power_phase_end_angle',
       2: 'power_phase_arc_length',
-      3: 'power_phase_center'
+      3: 'power_phase_center',
     },
     camera_event_type: {
       0: 'video_start',
@@ -2408,7 +2403,7 @@ var FIT = exports.FIT = {
       11: 'video_pause',
       12: 'video_second_stream_pause',
       13: 'video_resume',
-      14: 'video_second_stream_resume'
+      14: 'video_second_stream_resume',
     },
     sensor_type: {
       0: 'accelerometer',
@@ -2426,19 +2421,19 @@ var FIT = exports.FIT = {
       0: 'wildcard_pairing_timeout',
       1: 'pairing_timeout',
       2: 'connection_lost',
-      3: 'connection_timeout'
+      3: 'connection_timeout',
     },
     camera_orientation_type: {
       0: 'camera_orientation_0',
       1: 'camera_orientation_90',
       2: 'camera_orientation_180',
-      3: 'camera_orientation_270'
+      3: 'camera_orientation_270',
     },
     attitude_stage: {
       0: 'failed',
       1: 'aligning',
       2: 'degraded',
-      3: 'valid'
+      3: 'valid',
     },
     attitude_validity: {
       0: 0,
@@ -2454,14 +2449,14 @@ var FIT = exports.FIT = {
       512: 'gps_invalid',
       1024: 'solution_coasting',
       2048: 'true_track_angle',
-      4096: 'magnetic_heading'
+      4096: 'magnetic_heading',
     },
     auto_sync_frequency: {
       0: 'never',
       1: 'occasionally',
       2: 'frequent',
       3: 'once_a_day',
-      4: 'remote'
+      4: 'remote',
     },
     exd_layout: {
       0: 'full_screen',
@@ -2471,7 +2466,7 @@ var FIT = exports.FIT = {
       4: 'half_horizontal_bottom_split',
       5: 'full_quarter_split',
       6: 'half_vertical_left_split',
-      7: 'half_horizontal_top_split'
+      7: 'half_horizontal_top_split',
     },
     exd_display_type: {
       0: 'numerical',
@@ -2484,7 +2479,7 @@ var FIT = exports.FIT = {
       7: 'string_list',
       8: 'string',
       9: 'simple_dynamic_icon',
-      10: 'gauge'
+      10: 'gauge',
     },
     exd_data_units: {
       0: 'no_units',
@@ -2582,7 +2577,7 @@ var FIT = exports.FIT = {
       247: 'zone_4',
       248: 'zone_3',
       249: 'zone_2',
-      250: 'zone_1'
+      250: 'zone_1',
     },
     exd_descriptors: {
       0: 'bike_light_battery_status',
@@ -2690,7 +2685,7 @@ var FIT = exports.FIT = {
       4: 'swimming',
       8: 'walking',
       16: 'elliptical',
-      32: 'sedentary'
+      32: 'sedentary',
     },
     supported_exd_screen_layouts: {
       0: 0,
@@ -2760,11 +2755,11 @@ var FIT = exports.FIT = {
       34: 'uturn_left_idx',
       35: 'uturn_right_idx',
       36: 'icon_inv_idx',
-      37: 'icon_idx_cnt'
+      37: 'icon_idx_cnt',
     },
     bike_light_beam_angle_mode: {
       0: 'manual',
-      1: 'auto'
+      1: 'auto',
     },
     fit_base_unit: {
       0: 'other',
@@ -2773,7 +2768,7 @@ var FIT = exports.FIT = {
     },
     set_type: {
       0: 'rest',
-      1: 'active'
+      1: 'active',
     },
     exercise_category: {
       0: 'bench_press',
@@ -2809,7 +2804,7 @@ var FIT = exports.FIT = {
       30: 'triceps_extension',
       31: 'warm_up',
       32: 'run',
-      65534: 'unknown'
+      65534: 'unknown',
     },
     bench_press_exercise_name: {
       0: 'alternating_dumbbell_chest_press_on_swiss_ball',
@@ -2838,7 +2833,7 @@ var FIT = exports.FIT = {
       23: 'swiss_ball_dumbbell_chest_press',
       24: 'triple_stop_barbell_bench_press',
       25: 'wide_grip_barbell_bench_press',
-      26: 'alternating_dumbbell_chest_press'
+      26: 'alternating_dumbbell_chest_press',
     },
     calf_raise_exercise_name: {
       0: '3_way_calf_raise',
@@ -2861,7 +2856,7 @@ var FIT = exports.FIT = {
       17: 'standing_barbell_calf_raise',
       18: 'standing_calf_raise',
       19: 'weighted_standing_calf_raise',
-      20: 'standing_dumbbell_calf_raise'
+      20: 'standing_dumbbell_calf_raise',
     },
     cardio_exercise_name: {
       0: 'bob_and_weave_circle',
@@ -2885,14 +2880,14 @@ var FIT = exports.FIT = {
       18: 'squat_jacks',
       19: 'weighted_squat_jacks',
       20: 'triple_under',
-      21: 'weighted_triple_under'
+      21: 'weighted_triple_under',
     },
     carry_exercise_name: {
       0: 'bar_holds',
       1: 'farmers_walk',
       2: 'farmers_walk_on_toes',
       3: 'hex_dumbbell_hold',
-      4: 'overhead_carry'
+      4: 'overhead_carry',
     },
     chop_exercise_name: {
       0: 'cable_pull_through',
@@ -2917,7 +2912,7 @@ var FIT = exports.FIT = {
       19: 'standing_rotational_chop',
       20: 'standing_split_rotational_chop',
       21: 'standing_split_rotational_reverse_chop',
-      22: 'standing_stability_reverse_chop'
+      22: 'standing_stability_reverse_chop',
     },
     core_exercise_name: {
       0: 'abs_jabs',
@@ -2992,7 +2987,7 @@ var FIT = exports.FIT = {
       69: 'swan',
       70: 'swimming',
       71: 'teaser',
-      72: 'the_hundred'
+      72: 'the_hundred',
     },
     crunch_exercise_name: {
       0: 'bicycle_crunch',
@@ -3079,7 +3074,7 @@ var FIT = exports.FIT = {
       81: 'toes_to_bar',
       82: 'weighted_toes_to_bar',
       83: 'crunch',
-      84: 'straight_leg_crunch_with_ball'
+      84: 'straight_leg_crunch_with_ball',
     },
     curl_exercise_name: {
       0: 'alternating_dumbbell_biceps_curl',
@@ -3125,7 +3120,7 @@ var FIT = exports.FIT = {
       40: 'swiss_ball_dumbbell_overhead_triceps_extension',
       41: 'swiss_ball_ez_bar_preacher_curl',
       42: 'twisting_standing_dumbbell_biceps_curl',
-      43: 'wide_grip_ez_bar_biceps_curl'
+      43: 'wide_grip_ez_bar_biceps_curl',
     },
 
     deadlift_exercise_name: {
@@ -3147,7 +3142,7 @@ var FIT = exports.FIT = {
       15: 'sumo_deadlift',
       16: 'sumo_deadlift_high_pull',
       17: 'trap_bar_deadlift',
-      18: 'wide_grip_barbell_deadlift'
+      18: 'wide_grip_barbell_deadlift',
     },
     flye_exercise_name: {
       0: 'cable_crossover',
@@ -3159,7 +3154,7 @@ var FIT = exports.FIT = {
       6: 'single_arm_standing_cable_reverse_flye',
       7: 'swiss_ball_dumbbell_flye',
       8: 'arm_rotations',
-      9: 'hug_a_tree'
+      9: 'hug_a_tree',
     },
     hip_raise_exercise_name: {
       0: 'barbell_hip_thrust_on_floor',
@@ -3211,7 +3206,7 @@ var FIT = exports.FIT = {
       46: 'inner_thigh_side_lift',
       47: 'leg_circles',
       48: 'leg_lift',
-      49: 'leg_lift_in_external_rotation'
+      49: 'leg_lift_in_external_rotation',
     },
     hip_stability_exercise_name: {
       0: 'band_side_lying_leg_raise',
@@ -3247,12 +3242,12 @@ var FIT = exports.FIT = {
       30: 'standing_rear_leg_raise',
       31: 'weighted_standing_rear_leg_raise',
       32: 'supine_hip_internal_rotation',
-      33: 'weighted_supine_hip_internal_rotation'
+      33: 'weighted_supine_hip_internal_rotation',
     },
     hip_swing_excercise_name: {
       0: 'single_arm_kettlebell_swing',
       1: 'single_arm_dumbbell_swing',
-      2: 'step_out_swing'
+      2: 'step_out_swing',
     },
     hyperextension_exercise_name: {
       0: 'back_extension_with_opposite_arm_and_leg_reach',
@@ -3294,7 +3289,7 @@ var FIT = exports.FIT = {
       36: 'weighted_swiss_ball_opposite_arm_and_leg_lift',
       37: 'superman_on_swiss_ball',
       38: 'cobra',
-      39: 'supine_floor_barre'
+      39: 'supine_floor_barre',
     },
     lateral_raise_exercise_name: {
       0: '45_degree_cable_external_rotation',
@@ -3330,7 +3325,7 @@ var FIT = exports.FIT = {
       30: 'wall_slide',
       31: 'weighted_wall_slide',
       32: 'arm_circles',
-      33: 'shaving_the_head'
+      33: 'shaving_the_head',
     },
     leg_curl_exercise_name: {
       0: 'leg_curl',
@@ -3344,7 +3339,7 @@ var FIT = exports.FIT = {
       8: 'split_stance_extension',
       9: 'staggered_stance_good_morning',
       10: 'swiss_ball_hip_raise_and_leg_curl',
-      11: 'zercher_good_morning'
+      11: 'zercher_good_morning',
     },
     leg_raise_exercise_name: {
       0: 'hanging_knee_raise',
@@ -3368,7 +3363,7 @@ var FIT = exports.FIT = {
       18: 'weighted_single_leg_lowering_drill',
       19: 'weighted_hanging_knee_raise',
       20: 'lateral_stepover',
-      21: 'weighted_lateral_stepover'
+      21: 'weighted_lateral_stepover',
     },
     lunge_exercise_name: {
       0: 'overhead_lunge',
@@ -3451,7 +3446,7 @@ var FIT = exports.FIT = {
       77: 'walking_dumbbell_lunge',
       78: 'walking_lunge',
       79: 'weighted_walking_lunge',
-      80: 'wide_grip_overhead_barbell_split_squat'
+      80: 'wide_grip_overhead_barbell_split_squat',
     },
     olympic_lift_exercise_name: {
       0: 'barbell_hang_power_clean',
@@ -3474,7 +3469,7 @@ var FIT = exports.FIT = {
       17: 'single_arm_hang_snatch',
       18: 'single_arm_kettlebell_snatch',
       19: 'split_jerk',
-      20: 'squat_clean_and_jerk'
+      20: 'squat_clean_and_jerk',
     },
     plank_exercise_name: {
       0: '45_degree_plank',
@@ -3611,7 +3606,7 @@ var FIT = exports.FIT = {
       131: 'bridge_one_leg_bridge',
       132: 'plank_with_arm_variations',
       133: 'plank_with_leg_lift',
-      134: 'reverse_plank_with_leg_pull'
+      134: 'reverse_plank_with_leg_pull',
     },
     plyo_exercise_name: {
       0: 'alternating_jump_lunge',
@@ -3646,7 +3641,7 @@ var FIT = exports.FIT = {
       29: 'squat_jump_onto_box',
       30: 'weighted_squat_jump_onto_box',
       31: 'squat_jumps_in_and_out',
-      32: 'weighted_squat_jumps_in_and_out'
+      32: 'weighted_squat_jumps_in_and_out',
     },
     pull_up_exercise_name: {
       0: 'banded_pull_ups',
@@ -3687,7 +3682,7 @@ var FIT = exports.FIT = {
       35: 'weighted_l_pull_up',
       36: 'suspended_chin_up',
       37: 'weighted_suspended_chin_up',
-      38: 'pull_up'
+      38: 'pull_up',
     },
     push_up_exercise_name: {
       0: 'chest_press_with_band',
@@ -3768,7 +3763,7 @@ var FIT = exports.FIT = {
       75: 'ring_push_up',
       76: 'weighted_ring_push_up',
       77: 'push_up',
-      78: 'pilates_pushup'
+      78: 'pilates_pushup',
     },
     row_exercise_name: {
       0: 'barbell_straight_leg_deadlift_to_row',
@@ -3804,7 +3799,7 @@ var FIT = exports.FIT = {
       30: 'weighted_towel_grip_inverted_row',
       31: 'underhand_grip_cable_row',
       32: 'v_grip_cable_row',
-      33: 'wide_grip_seated_cable_row'
+      33: 'wide_grip_seated_cable_row',
     },
     shoulder_press_exercise_name: {
       0: 'alternating_dumbbell_shoulder_press',
@@ -3830,7 +3825,7 @@ var FIT = exports.FIT = {
       20: 'smith_machine_overhead_press',
       21: 'split_stance_hammer_curl_to_press',
       22: 'swiss_ball_dumbbell_shoulder_press',
-      23: 'weight_plate_front_raise'
+      23: 'weight_plate_front_raise',
     },
     shoulder_stability_exercise_name: {
       0: '90_degree_cable_external_rotation',
@@ -3865,7 +3860,7 @@ var FIT = exports.FIT = {
       29: 'swiss_ball_w_raise',
       30: 'weighted_swiss_ball_w_raise',
       31: 'swiss_ball_y_raise',
-      32: 'weighted_swiss_ball_y_raise'
+      32: 'weighted_swiss_ball_y_raise',
     },
     shrug_exercise_name: {
       0: 'barbell_jump_shrug',
@@ -3884,7 +3879,7 @@ var FIT = exports.FIT = {
       13: 'weighted_serratus_chair_shrug',
       14: 'serratus_shrug',
       15: 'weighted_serratus_shrug',
-      16: 'wide_grip_jump_shrug'
+      16: 'wide_grip_jump_shrug',
     },
     sit_up_exercise_name: {
       0: 'alternating_sit_up',
@@ -3924,7 +3919,7 @@ var FIT = exports.FIT = {
       34: 'weighted_sit_up',
       35: 'x_abs',
       36: 'weighted_x_abs',
-      37: 'sit_up'
+      37: 'sit_up',
     },
     squat_exercise_name: {
       0: 'leg_press',
@@ -4018,7 +4013,7 @@ var FIT = exports.FIT = {
       88: 'squat_and_side_kick',
       89: 'squat_jumps_in_n_out',
       90: 'pilates_plie_squats_parallel_turned_out_flat_and_heels',
-      91: 'releve_straight_leg_and_knee_bent_with_one_leg_variation'
+      91: 'releve_straight_leg_and_knee_bent_with_one_leg_variation',
     },
     total_body_exercise_name: {
       0: 'burpee',
@@ -4033,7 +4028,7 @@ var FIT = exports.FIT = {
       9: 'squat_plank_push_up',
       10: 'weighted_squat_plank_push_up',
       11: 'standing_t_rotation_balance',
-      12: 'weighted_standing_t_rotation_balance'
+      12: 'weighted_standing_t_rotation_balance',
     },
     triceps_extension_exercise_name: {
       0: 'bench_dip',
@@ -4076,7 +4071,7 @@ var FIT = exports.FIT = {
       37: 'weighted_tabletop_dip',
       38: 'triceps_extension_on_floor',
       39: 'triceps_pressdown',
-      40: 'weighted_dip'
+      40: 'weighted_dip',
     },
     warm_up_exercise_name: {
       0: 'quadruped_rocking',
@@ -4109,53 +4104,54 @@ var FIT = exports.FIT = {
       27: 'walking_knee_hugs',
       28: 'walking_leg_cradles',
       29: 'walkout',
-      30: 'walkout_from_push_up_position'
+      30: 'walkout_from_push_up_position',
     },
     run_exercise_name: {
       0: 'run',
       1: 'walk',
       2: 'jog',
-      3: 'sprint'
+      3: 'sprint',
     },
     water_type: {
       0: 'fresh',
       1: 'salt',
       2: 'en13319',
-      3: 'custom'
+      3: 'custom',
     },
     tissue_model_type: {
-      0: 'zhl_16c'
+      0: 'zhl_16c',
     },
     dive_gas_status: {
       0: 'disabled',
       1: 'enabled',
-      2: 'backup_only'
+      2: 'backup_only',
     },
     dive_alarm_type: {
       0: 'depth',
-      1: 'time'
+      1: 'time',
     },
     dive_backlight_mode: {
       0: 'at_depth',
-      1: 'always_on'
+      1: 'always_on',
     },
     favero_product: {
       10: 'assioma_uno',
-      12: 'assioma_duo'
-    }
-  }
+      12: 'assioma_duo',
+    },
+  },
 };
 
-function getMessageName(messageNum) {
-  var message = FIT.messages[messageNum];
+export function getMessageName(messageNum: number): string {
+  const message = FITSDK.messages[messageNum];
   return message ? message.name : '';
 }
 
-function getFieldObject(fieldNum, messageNum) {
-  var message = FIT.messages[messageNum];
+export function getFieldObject(fieldNum: number,
+  messageNum: number): Message {
+  const message = FITSDK.messages[messageNum];
   if (!message) {
-    return '';
+    return {};
   }
-  var fieldObj = message[fieldNum];
-  return fieldObj ? fieldObj : {};
+  const fieldObj = message[fieldNum];
+  return fieldObj;
 }

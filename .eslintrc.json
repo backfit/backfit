@@ -1,0 +1,10 @@
+{
+  "extends": ["airbnb"],
+  "plugins": ["@typescript-eslint"],
+  "parser": "@typescript-eslint/parser",
+  "rules": {
+    "import/no-unresolved": 0,
+    "no-plusplus": [2, { "allowForLoopAfterthoughts": true }]
+    "no-bitwise": 0
+  }
+}
