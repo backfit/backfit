@@ -1,15 +1,13 @@
 {
-  "compilerOptions": {
-    "target": "es6",
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    "outDir": "dist",
-    "moduleResolution": "node"
-  },
-  "exclude": [
-    "node_modules"
-  ],
-  "files": [
-    "lib/index.ts"
-  ]
+	"compilerOptions": {
+		"target": "esnext",
+		"moduleResolution": "node",
+		"strict": true,
+    "declaration": true,
+		"esModuleInterop": true,
+    "outDir": "lib"
+	},
+	"include": [
+		"src"
+	]
 }

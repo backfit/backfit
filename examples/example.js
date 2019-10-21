@@ -1,4 +1,4 @@
-var FitParser = require('./../dist/fit-parser.js').default;
+var FitParser = require('./../lib/fit-parser.js').default;
 var fs = require('fs');
 
 var file = process.argv[2];
@@ -13,12 +13,12 @@ fs.readFile(file, function (err, content) {
     mode: 'list',
   });
 
-  fitParser.parse(content, function (error, data) {
-    if (error) {
-      console.log(error);
-    } else {
-      // console.log(JSON.stringify(data));
+  fitParser.parse(content)
+    .then(function (data) {
       console.log(data.records[0]);
-    }
-  });
+    })
+    .catch(function (err) {
+      console.log(err);
+    })
 });
+

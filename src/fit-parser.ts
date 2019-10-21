@@ -1,3 +1,5 @@
+import "core-js/stable";
+import "regenerator-runtime/runtime";
 import { getArrayBuffer, calculateCRC, readRecord } from './binary';
 import { DeveloperFields, FitParserOptions,
   FitParserResult } from './types';
@@ -13,7 +15,7 @@ export default class FitParser {
     mode: 'list',
   }
 
-  constructor(options: FitParserOptions = null) {
+  constructor(options: FitParserOptions = undefined) {
     if (options) {
       this.options = {
         force: options.force != null ? options.force : true,
@@ -26,11 +28,11 @@ export default class FitParser {
     }
   }
 
-  parse(content: Buffer, callback: (string, object) => void) {
+  async parse(content: Buffer): Promise<FitParserResult> {
     const blob = new Uint8Array(getArrayBuffer(content));
 
     if (blob.length < 12) {
-      callback('File to small to be a FIT file', {});
+      throw Error('File to small to be a FIT file');
       if (!this.options.force) {
         return;
       }
@@ -38,7 +40,7 @@ export default class FitParser {
 
     const headerLength = blob[0];
     if (headerLength !== 14 && headerLength !== 12) {
-      callback('Incorrect header size', {});
+      throw Error('Incorrect header size');
       if (!this.options.force) {
         return;
       }
@@ -49,7 +51,7 @@ export default class FitParser {
       fileTypeString += String.fromCharCode(blob[i]);
     }
     if (fileTypeString !== '.FIT') {
-      callback('Missing \'.FIT\' in header', {});
+      throw Error('Missing \'.FIT\' in header');
       if (!this.options.force) {
         return;
       }
@@ -59,7 +61,7 @@ export default class FitParser {
       const crcHeader = blob[12] + (blob[13] << 8);
       const crcHeaderCalc = calculateCRC(blob, 0, 12);
       if (crcHeader !== crcHeaderCalc) {
-        // callback('Header CRC mismatch', {});
+        // throw Error('Header CRC mismatch');
         // TODO: fix Header CRC check
         if (!this.options.force) {
           return;
@@ -72,7 +74,7 @@ export default class FitParser {
     const crcFileCalc = calculateCRC(blob, headerLength === 12 ? 0 : headerLength, crcStart);
 
     if (crcFile !== crcFileCalc) {
-      // callback('File CRC mismatch', {});
+      // callback('File CRC mismatch');
       // TODO: fix File CRC check
       if (!this.options.force) {
         return;
@@ -192,7 +194,7 @@ export default class FitParser {
       fitObj.course_points = course_points;
     }
 
-    callback(null, fitObj);
+    return await fitObj;
   }
 }
 
