@@ -2,7 +2,7 @@ import "core-js/stable";
 import "regenerator-runtime/runtime";
 import { getArrayBuffer, calculateCRC, readRecord } from './binary';
 import { DeveloperFields, FitParserOptions,
-  FitParserResult } from './types';
+  FitParserResult, MessageTypes } from './types';
 
 export default class FitParser {
 
@@ -97,7 +97,7 @@ export default class FitParser {
     let tempRecords = [];
 
     let loopIndex = headerLength;
-    const messageTypes = [];
+    const messageTypes = MessageTypes;
     const developerFields: DeveloperFields = [];
 
     const isModeCascade = this.options.mode === 'cascade';
