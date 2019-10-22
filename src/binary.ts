@@ -93,27 +93,29 @@ function formatByType(data: any, type: string,
     case 'uint16':
       return scale ? data / scale + offset : data;
     case 'uint16_array':
-      return data.map((dataItem) => {
+      const data_array = data as number[]
+      return data.map((dataItem: number) => {
         if (scale) {
           return dataItem / scale + offset;
         }
         return dataItem;
       });
     default: {
-      if (!FITSDK.types[type]) {
+      if (!FITSDK.types.hasOwnProperty(type)) {
         return data;
       }
+      const types = FITSDK.types[type]
       // Quick check for a mask
-      const values = [];
-      Object.keys(FITSDK.types[type]).forEach((key, _) => {
-        values.push(FITSDK.types[type][key]);
+      const values: string[] = [];
+      Object.keys(types).forEach((key, _) => {
+        values.push(types[key]);
       });
       if (values.indexOf('mask') === -1) {
-        return FITSDK.types[type][data];
+        return types[data];
       }
-      const dataItem = {};
-      Object.keys(FITSDK.types[type]).forEach((key: string, _: number) => {
-        const item = FITSDK.types[type][key]
+      const dataItem: { [key: string]: number|boolean } = {};
+      Object.keys(types).forEach((key: string, _: number) => {
+        const item = types[key]
         if (item === 'mask') {
           dataItem['value'] = data & parseInt(key);
         } else {
