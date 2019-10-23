@@ -73,12 +73,13 @@ export interface MessageTypes {
 
 export interface FitMessage {
   name: string;
-  getAttributes: (number) => Message;
+  getAttributes: (key: number) => Message;
 }
 
 export interface Message {
   field?: string;
   type?: string;
-  scale?: number;
-  offset?: number;
+  scale?: number|string|null;
+  offset?: number|string;
+  units?: string;
 }

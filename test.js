@@ -1,10 +1,9 @@
-import { Sdk } from './sdkhelpers';
 
-export const FITSDK: Sdk = {
+const FITSDK = {
   scConst: 180 / 2 ** 31,
   options: {
     speedUnits: {
-      'mph': {
+      mph: {
         multiplier: 3.6 / 1.4,
         offset: 0,
       },
@@ -14,11 +13,11 @@ export const FITSDK: Sdk = {
       },
     },
     lengthUnits: {
-      'mi': {
+      mi: {
         multiplier: 1 / 1609.344,
         offset: 0,
       },
-      'km': {
+      km: {
         multiplier: 1 / 1000,
         offset: 0,
       },
@@ -4141,3 +4140,4 @@ export const FITSDK: Sdk = {
   },
 };
 
+console.log(JSON.stringify(FITSDK))
