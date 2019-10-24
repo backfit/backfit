@@ -81,7 +81,7 @@ function readData(blob: Uint8Array, fDef: Def, startIndex: number,
 }
 
 function formatByType(data: any, type: string,
-  scale: number, offset: number): any {
+  scale?: number, offset?: number): any {
   switch (type) {
     case 'date_time':
     case 'local_date_time':
@@ -91,12 +91,12 @@ function formatByType(data: any, type: string,
     case 'sint16':
     case 'uint32':
     case 'uint16':
-      return scale ? data / scale + offset : data;
+      return scale ? data / scale + (offset || 0) : data;
     case 'uint16_array':
       const data_array = data as number[]
       return data.map((dataItem: number) => {
         if (scale) {
-          return dataItem / scale + offset;
+          return dataItem / scale + (offset || 0);
         }
         return dataItem;
       });
@@ -104,26 +104,27 @@ function formatByType(data: any, type: string,
       if (!FITSDK.types.hasOwnProperty(type)) {
         return data;
       }
-      const types = FITSDK.types[type]
+      const t = FITSDK.types[type]
+      const tKeys = Object.keys(t)
       // Quick check for a mask
-      const values: string[] = [];
-      Object.keys(types).forEach((key, _) => {
-        values.push(types[key]);
+      const values: (string|number)[] = [];
+      tKeys.forEach((key: string) => {
+        values.push(t[parseInt(key)]);
       });
       if (values.indexOf('mask') === -1) {
-        return types[data];
+        return t[data];
       }
       const dataItem: { [key: string]: number|boolean } = {};
-      Object.keys(types).forEach((key: string, _: number) => {
-        const item = types[key]
-        if (item === 'mask') {
-          dataItem['value'] = data & parseInt(key);
-        } else {
-          dataItem[item] = !!((data & parseInt(key)) >> 7);
-          // Not sure if we need the >> 7 and casting to boolean but from all
-          // the masked props of fields so far this seems to be the case
-        }
-      });
+      tKeys.forEach((key: string) => {
+          const item = t[parseInt(key)]
+          if (item === 'mask') {
+            dataItem['value'] = data & parseInt(key);
+          } else {
+            dataItem[item] = !!((data & parseInt(key)) >> 7);
+            // Not sure if we need the >> 7 and casting to boolean but from all
+            // the masked props of fields so far this seems to be the case
+          }
+        });
       return dataItem;
     }
   }
@@ -190,7 +191,9 @@ function applyOptions(data: any, field: string, options: FitParserOptions): any 
     case 'max_pos_vertical_speed':
     case 'avg_neg_vertical_speed':
     case 'max_neg_vertical_speed':
-      return convertTo(data, 'speedUnits', options.speedUnit);
+      if (options.speedUnit) {
+        return convertTo(data, 'speedUnits', options.speedUnit);
+      }
     case 'distance':
     case 'total_distance':
     case 'enhanced_avg_altitude':
@@ -210,17 +213,23 @@ function applyOptions(data: any, field: string, options: FitParserOptions): any 
     case 'auto_wheelsize':
     case 'custom_wheelsize':
     case 'gps_accuracy':
-      return convertTo(data, 'lengthUnits', options.lengthUnit);
+      if (options.lengthUnit) {
+        return convertTo(data, 'lengthUnits', options.lengthUnit);
+      }
     case 'temperature':
     case 'avg_temperature':
     case 'max_temperature':
-      return convertTo(data, 'temperatureUnits', options.temperatureUnit);
+      if (options.temperatureUnit) {
+        return convertTo(data, 'temperatureUnits',
+          options.temperatureUnit);
+      }
     default:
       return data;
   }
 }
 
-export function readRecord(blob: Uint8Array, messageTypes: MessageTypes,
+export function readRecord(blob: Uint8Array,
+  messageTypes: MessageTypes,
   developerFields: DeveloperFields,
   startIndex: number, options: FitParserOptions,
   startDate: number, pausedTime: number): ReadResult {
@@ -244,12 +253,14 @@ export function readRecord(blob: Uint8Array, messageTypes: MessageTypes,
     };
 
     const message = getFitMessage(mTypeDef.globalMessageNumber);
+    // console.log(message)
 
     for (let i = 0; i < numberOfFields; i++) {
       const fDefIndex = startIndex + 6 + (i * 3);
       const baseType = blob[fDefIndex + 2];
       const { field, type } = message.getAttributes(blob[fDefIndex]); 
-      const fDef = {
+      if (field) {
+      const fDef: Def = {
         type,
         fDefNo: blob[fDefIndex],
         size: blob[fDefIndex + 1],
@@ -261,6 +272,7 @@ export function readRecord(blob: Uint8Array, messageTypes: MessageTypes,
       };
 
         mTypeDef.fieldDefs.push(fDef);
+      }
     }
 
     for (let i = 0; i < numberOfDeveloperDataFields; i++) {
@@ -330,17 +342,19 @@ export function readRecord(blob: Uint8Array, messageTypes: MessageTypes,
       if (fDef.isDeveloperField) {
         const field = fDef.name;
         const { type, scale, offset } = fDef;
-
-        fields[fDef.name] = applyOptions(formatByType(data, type, scale, offset), field, options);
+        
+        if (type) {
+          fields[fDef.name] = applyOptions(formatByType(data, type, scale as number, offset as number), field, options);
+        }
       } else {
         const { field, type, scale, offset } = message.getAttributes(fDef.fDefNo);
 
-        if (field !== 'unknown' && field !== '' && field !== undefined) {
-          fields[field] = applyOptions(formatByType(data, type, scale, offset), field, options);
+        if (field !== 'unknown' && field !== '' && field !== undefined && type) {
+          fields[field] = applyOptions(formatByType(data, type, scale as number, offset as number), field, options);
         }
       }
-
-      if (message.name === 'record' && options.elapsedRecordField) {
+      if (message.name === 'record' && options.elapsedRecordField &&
+          fields.timestamp) {
         fields.elapsed_time = (fields.timestamp - startDate) / 1000;
         fields.timer_time = fields.elapsed_time - pausedTime;
       }
@@ -351,8 +365,12 @@ export function readRecord(blob: Uint8Array, messageTypes: MessageTypes,
   }
 
   if (message.name === 'field_description') {
-    developerFields[fields.developer_data_index] = developerFields[fields.developer_data_index] || [];
-    developerFields[fields.developer_data_index][fields.field_definition_number] = fields;
+    if (fields.developer_data_index && fields.field_definition_number) {
+      developerFields[fields.developer_data_index] =
+        developerFields[fields.developer_data_index] || [];
+      developerFields[fields.developer_data_index][fields.field_definition_number] =
+        fields;
+    }
   }
 
   const result = {

@@ -15,10 +15,10 @@ export default class FitParser {
     mode: 'list',
   }
 
-  constructor(options: FitParserOptions = undefined) {
+  constructor(options: FitParserOptions = {}) {
     if (options) {
       this.options = {
-        force: options.force != null ? options.force : true,
+        force: options.force ? options.force : true,
         speedUnit: options.speedUnit || 'm/s',
         lengthUnit: options.lengthUnit || 'm',
         temperatureUnit: options.temperatureUnit || 'celsius',
@@ -33,17 +33,11 @@ export default class FitParser {
 
     if (blob.length < 12) {
       throw Error('File to small to be a FIT file');
-      if (!this.options.force) {
-        return;
-      }
     }
 
     const headerLength = blob[0];
     if (headerLength !== 14 && headerLength !== 12) {
       throw Error('Incorrect header size');
-      if (!this.options.force) {
-        return;
-      }
     }
 
     let fileTypeString = '';
@@ -52,9 +46,6 @@ export default class FitParser {
     }
     if (fileTypeString !== '.FIT') {
       throw Error('Missing \'.FIT\' in header');
-      if (!this.options.force) {
-        return;
-      }
     }
 
     if (headerLength === 14) {
@@ -63,9 +54,6 @@ export default class FitParser {
       if (crcHeader !== crcHeaderCalc) {
         // throw Error('Header CRC mismatch');
         // TODO: fix Header CRC check
-        if (!this.options.force) {
-          return;
-        }
       }
     }
     const dataLength = blob[4] + (blob[5] << 8) + (blob[6] << 16) + (blob[7] << 24);
@@ -76,9 +64,6 @@ export default class FitParser {
     if (crcFile !== crcFileCalc) {
       // callback('File CRC mismatch');
       // TODO: fix File CRC check
-      if (!this.options.force) {
-        return;
-      }
     }
 
     const fitObj:FitParserResult = {};
@@ -97,13 +82,13 @@ export default class FitParser {
     let tempRecords = [];
 
     let loopIndex = headerLength;
-    const messageTypes = MessageTypes;
+    const messageTypes: MessageTypes = {};
     const developerFields: DeveloperFields = [];
 
     const isModeCascade = this.options.mode === 'cascade';
     const isCascadeNeeded = isModeCascade || this.options.mode === 'both';
 
-    let startDate, lastStopTimestamp;
+    let startDate = 0, lastStopTimestamp;
     let pausedTime = 0;
 
     while (loopIndex < crcStart) {
@@ -112,70 +97,78 @@ export default class FitParser {
         message } = readRecord(blob, messageTypes, developerFields, loopIndex, this.options, startDate, pausedTime);
       loopIndex = nextIndex;
 
-      switch (messageType) {
-        case 'lap':
-          if (isCascadeNeeded) {
-            message.records = tempRecords;
-            tempRecords = [];
-            tempLaps.push(message);
-          }
-          laps.push(message);
-          break;
-        case 'session':
-          if (isCascadeNeeded) {
-            message.laps = tempLaps;
-            tempLaps = [];
-          }
-          sessions.push(message);
-          break;
-        case 'event':
-          if (message.event === 'timer') {
-            if (message.event_type === 'stop_all') {
-              lastStopTimestamp = message.timestamp;
-            } else if (message.event_type === 'start' && lastStopTimestamp) {
-              pausedTime += (message.timestamp - lastStopTimestamp) / 1000;
+      if (message) {
+        switch (messageType) {
+          case 'lap':
+            if (isCascadeNeeded) {
+              message.records = tempRecords;
+              tempRecords = [];
+              tempLaps.push(message);
             }
-          }
-          events.push(message);
-          break;
-        case 'hrv':
-          hrv.push(message);
-          break;
-        case 'record':
-          if (!startDate) {
-            startDate = message.timestamp;
-            message.elapsed_time = 0;
-            message.timer_time = 0;
-          }
-          records.push(message);
-          if (isCascadeNeeded) {
-            tempRecords.push(message);
-          }
-          break;
-        case 'field_description':
-          fieldDescriptions.push(message);
-          break;
-        case 'device_info':
-          devices.push(message);
-          break;
-        case 'developer_data_id':
-          applications.push(message);
-          break;
-        case 'dive_gas':
-          dive_gases.push(message);
-          break;
-        case 'course_point':
-          course_points.push(message);
-          break;
-        default:
-          if (messageType !== '') {
-            fitObj[messageType] = message;
-          }
-          break;
+            laps.push(message);
+            break;
+          case 'session':
+            if (isCascadeNeeded) {
+              message.laps = tempLaps;
+              tempLaps = [];
+            }
+            sessions.push(message);
+            break;
+          case 'event':
+            if (message.event === 'timer') {
+              if (message.event_type === 'stop_all') {
+                lastStopTimestamp = message.timestamp;
+              } else if (message.event_type === 'start' &&
+                         lastStopTimestamp && message.timestamp) {
+                pausedTime += (message.timestamp - lastStopTimestamp) / 1000;
+              }
+            }
+            events.push(message);
+            break;
+          case 'hrv':
+            hrv.push(message);
+            break;
+          case 'record':
+            if (!startDate) {
+              if (message.timestamp) {
+                startDate = message.timestamp
+              }
+              message.elapsed_time = 0;
+              message.timer_time = 0;
+            }
+            records.push(message);
+            if (isCascadeNeeded) {
+              tempRecords.push(message);
+            }
+            break;
+          case 'field_description':
+            fieldDescriptions.push(message);
+            break;
+          case 'device_info':
+            devices.push(message);
+            break;
+          case 'developer_data_id':
+            applications.push(message);
+            break;
+          case 'dive_gas':
+            dive_gases.push(message);
+            break;
+          case 'course_point':
+            course_points.push(message);
+            break;
+          default:
+            if (messageType !== '') {
+              fitObj[messageType] = message;
+            }
+            break;
+        }
+
       }
+
     }
 
     if (isCascadeNeeded) {
+      fitObj.activity = {}
       fitObj.activity = fitObj.activity || null;
       fitObj.activity.sessions = sessions;
       fitObj.activity.events = events;
