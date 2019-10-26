@@ -97,7 +97,7 @@ export default class FitParser {
     let tempRecords = [];
 
     let loopIndex = headerLength;
-    const messageTypes = MessageTypes;
+    const messageTypes: MessageTypes = {};
     const developerFields: DeveloperFields = [];
 
     const isModeCascade = this.options.mode === 'cascade';
