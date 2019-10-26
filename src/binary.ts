@@ -326,21 +326,21 @@ export function readRecord(blob: Uint8Array, messageTypes: MessageTypes,
     const fDef = messageType.fieldDefs[i];
     const data = readData(blob, fDef, readDataFromIndex, options);
 
-    if (!isInvalidValue(data, fDef.type)) {
+    if (!isInvalidValue(data, fDef.mType)) {
       if (fDef.isDeveloperField) {
         const field = fDef.name;
-        const { type, scale, offset } = fDef;
+        const { mType, scale, offset } = fDef;
 
-        fields[fDef.name] = applyOptions(formatByType(data, type, scale, offset), field, options);
+        fields[fDef.name] = applyOptions(formatByType(data, mType, scale, offset), field, options);
       } else {
-        const { field, type, scale, offset } = message.getAttributes(fDef.fDefNo);
+        const { field, mType, scale, offset } = message.getAttributes(fDef.fDefNo);
 
         if (field !== 'unknown' && field !== '' && field !== undefined) {
-          fields[field] = applyOptions(formatByType(data, type, scale, offset), field, options);
+          fields[field] = applyOptions(formatByType(data, mType, scale, offset), field, options);
         }
       }
 
-      if (message.name === 'record' && options.elapsedRecordField) {
+      if (message.name === 'record' && options.elapsedRecordField && fields.timestamp) {
         fields.elapsed_time = (fields.timestamp - startDate) / 1000;
         fields.timer_time = fields.elapsed_time - pausedTime;
       }

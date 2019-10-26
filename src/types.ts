@@ -42,7 +42,7 @@ export interface TypeDef {
 }
 
 export interface Def {
-  type: any;
+  mType: any;
   fDefNo: number;
   size: number;
   endianAbility: boolean;
