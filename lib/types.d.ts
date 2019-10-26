@@ -1,7 +1,7 @@
 export interface Activity {
-    sessions: object[];
-    events: object[];
-    hrv: object[];
+    sessions: Fields;
+    events: Fields;
+    hrv: Fields;
 }
 export interface ReadResult {
     messageType: string;
@@ -10,16 +10,17 @@ export interface ReadResult {
 }
 export interface FitParserResult {
     activity?: Activity;
-    sessions?: object[];
-    laps?: object[];
-    records?: object[];
-    events?: object[];
-    device_infos?: object[];
-    developer_data_ids?: object[];
-    field_descriptions?: object[];
-    hrv?: object[];
-    dive_gases?: object[];
-    course_points?: object[];
+    sessions?: Fields;
+    laps?: Fields;
+    records?: Fields;
+    events?: Fields;
+    device_infos?: Fields;
+    developer_data_ids?: Fields;
+    field_descriptions?: Fields;
+    hrv?: Fields;
+    dive_gases?: Fields;
+    course_points?: Fields;
+    [default_message: string]: Fields | undefined;
 }
 export interface FitParserOptions {
     force?: boolean;
