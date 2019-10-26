@@ -1,4 +1,4 @@
-import { getMessageName, getFieldObject } from './sdkhelpers';
+import { getMessageName, getFieldObject } from './sdk';
 import { FitMessage } from './types';
 
 export function getFitMessage(messageNum: number): FitMessage {
@@ -9,6 +9,6 @@ export function getFitMessage(messageNum: number): FitMessage {
 }
 
 // TODO
-export function getFitMessageBaseType(foo: any) {
+export function getFitMessageBaseType(foo) {
   return foo;
 }

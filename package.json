@@ -74,7 +74,6 @@
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^2.4.0",
     "@typescript-eslint/parser": "^2.4.0",
-    "buffer": "^5.1.0",
-    "typescript-interface-generator": "0.0.6"
+    "buffer": "^5.1.0"
   }
 }

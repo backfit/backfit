@@ -1,10 +1,10 @@
-import { Sdk } from './sdkhelpers';
+import { Message } from './types';
 
-export const FITSDK: Sdk = {
+export const FITSDK = {
   scConst: 180 / 2 ** 31,
   options: {
     speedUnits: {
-      'mph': {
+      mph: {
         multiplier: 3.6 / 1.4,
         offset: 0,
       },
@@ -14,11 +14,11 @@ export const FITSDK: Sdk = {
       },
     },
     lengthUnits: {
-      'mi': {
+      mi: {
         multiplier: 1 / 1609.344,
         offset: 0,
       },
-      'km': {
+      km: {
         multiplier: 1 / 1000,
         offset: 0,
       },
@@ -4141,3 +4141,26 @@ export const FITSDK: Sdk = {
   },
 };
 
+export function getMessageName(messageNum: number): string {
+  const message = FITSDK.messages[messageNum];
+  return message ? message.name : '';
+}
+
+export function getFieldObject(fieldNum: number,
+  messageNum: number): Message {
+  const message = FITSDK.messages[messageNum];
+  if (!message) {
+    return {
+      type: "",
+      field: "",
+    }
+  }
+  const fieldObj = <Message>message[fieldNum];
+  if (!fieldObj) {
+    return {
+      type: "",
+      field: "",
+    }
+  }
+  return fieldObj;
+}
