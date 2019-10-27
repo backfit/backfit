@@ -1,7 +1,7 @@
-#Early prototype and binary manipulations:
+# Early prototype and binary manipulations:
 @mlofjard (https://github.com/mlofjard/jsonfit)
 
-#Pull requests: 
+# Pull requests: 
 - Ian Forsyth (@ianforsyth)
 - Aengus McCullough (@aengus1)
 - Manuel Baun (@Manuelbaun)
