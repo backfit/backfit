@@ -65,10 +65,8 @@
     "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
-    "example-output": "npm run build:js; node examples/example.js examples/example.fit > examples/output.json",
-    "example": "npm run build; node examples/example.js examples/example.fit",
-    "test": "node_modules/gulp/bin/gulp.js;",
-    "build-o": "node_modules/gulp/bin/gulp.js"
+    "example-output": "npm run build; node examples/example.js examples/example.fit > examples/output.json",
+    "example": "npm run build; node examples/example.js examples/example.fit"
   },
   "version": "1.6.15",
   "dependencies": {

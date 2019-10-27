@@ -16,6 +16,7 @@ fs.readFile(file, function (err, content) {
   fitParser.parse(content)
     .then(function (data) {
       console.log(data.records[0]);
+      // console.log(data);
     })
     .catch(function (err) {
       console.log(err);

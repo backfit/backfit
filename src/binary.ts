@@ -80,9 +80,9 @@ function readData(blob: Uint8Array, fDef: Def, startIndex: number,
   return blob[startIndex];
 }
 
-function formatByType(data: any, type: string,
-  scale: number, offset?: number): any {
-  const off = offset ? offset : 0;
+function formatByType(data: any, type?: string,
+  scale?: number|string|null, offset?: number|string): any {
+  const off = offset ? offset as number : 0;
   switch (type) {
     case 'date_time':
     case 'local_date_time':
@@ -92,39 +92,43 @@ function formatByType(data: any, type: string,
     case 'sint16':
     case 'uint32':
     case 'uint16':
-      return scale ? data / scale + off : data;
+      return scale ? data / (scale as number) + off : data;
     case 'uint16_array':
       const data_array = data as number[]
       return data.map((dataItem: number) => {
         if (scale) {
-          return dataItem / scale + off;
+          return dataItem / (scale as number) + off;
         }
         return dataItem;
       });
     default: {
+      if (!type) {
+        return data;
+      }
       if (!FITSDK.types.hasOwnProperty(type)) {
         return data;
       }
-      const types = FITSDK.types[type]
+      const t = FITSDK.types[type]
+      const tKeys = Object.keys(t)
       // Quick check for a mask
-      const values: string[] = [];
-      Object.keys(types).forEach((key, _) => {
-        values.push(types[key]);
+      const values: (string|number)[] = [];
+      tKeys.forEach((key: string) => {
+        values.push(t[parseInt(key)]);
       });
       if (values.indexOf('mask') === -1) {
-        return types[data];
+        return t[data];
       }
       const dataItem: { [key: string]: number|boolean } = {};
-      Object.keys(types).forEach((key: string, _: number) => {
-        const item = types[key]
-        if (item === 'mask') {
-          dataItem['value'] = data & parseInt(key);
-        } else {
-          dataItem[item] = !!((data & parseInt(key)) >> 7);
-          // Not sure if we need the >> 7 and casting to boolean but from all
-          // the masked props of fields so far this seems to be the case
-        }
-      });
+      tKeys.forEach((key: string) => {
+          const item = t[parseInt(key)]
+          if (item === 'mask') {
+            dataItem['value'] = data & parseInt(key);
+          } else {
+            dataItem[item] = !!((data & parseInt(key)) >> 7);
+            // Not sure if we need the >> 7 and casting to boolean but from all
+            // the masked props of fields so far this seems to be the case
+          }
+        });
       return dataItem;
     }
   }
@@ -342,7 +346,8 @@ export function readRecord(blob: Uint8Array, messageTypes: MessageTypes,
         }
       }
 
-      if (message.name === 'record' && options.elapsedRecordField) {
+      if (message.name === 'record' && options.elapsedRecordField &&
+          fields.timestamp) {
         fields.elapsed_time = (fields.timestamp - startDate) / 1000;
         fields.timer_time = fields.elapsed_time - pausedTime;
       }
@@ -353,8 +358,12 @@ export function readRecord(blob: Uint8Array, messageTypes: MessageTypes,
   }
 
   if (message.name === 'field_description') {
-    developerFields[fields.developer_data_index] = developerFields[fields.developer_data_index] || [];
-    developerFields[fields.developer_data_index][fields.field_definition_number] = fields;
+    if (fields.field_definition_number &&
+        fields.developer_data_index) {
+      developerFields[fields.developer_data_index] =
+        developerFields[fields.developer_data_index] || [];
+      developerFields[fields.developer_data_index][fields.field_definition_number] = fields;
+    }
   }
 
   const result = {
