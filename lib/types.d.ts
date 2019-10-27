@@ -43,7 +43,7 @@ export interface Def {
     endianAbility: boolean;
     littleEndian: boolean;
     baseTypeNo: number;
-    name: string;
+    name?: string;
     dataType: string;
     isDeveloperField?: boolean;
     scale?: number;

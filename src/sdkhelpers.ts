@@ -27,7 +27,7 @@ export function getFieldObject(fieldNum: number,
 
 export interface Sdk {
   scConst: number;
-  options: object;
+  options: SdkOptions;
   messages: { [key: number]: MessageGroup };
   types: { [key: string]: Type };
 }
@@ -36,6 +36,7 @@ export interface SdkOptions {
   speedUnits: { [unit: string]: UnitFields };
   lengthUnits: { [unit: string]: UnitFields };
   temperatureUnits: { [unit: string]: UnitFields };
+  [unitKey: string]: { [unit: string]: UnitFields };
 }
 
 export interface UnitFields {

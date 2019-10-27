@@ -42,13 +42,13 @@ export interface TypeDef {
 }
 
 export interface Def {
-  mType: any;
+  type: any;
   fDefNo: number;
   size: number;
   endianAbility: boolean;
   littleEndian: boolean;
   baseTypeNo: number;
-  name: string;
+  name?: string;
   dataType: string;
   isDeveloperField?: boolean;
   scale?: number;

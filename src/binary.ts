@@ -81,7 +81,8 @@ function readData(blob: Uint8Array, fDef: Def, startIndex: number,
 }
 
 function formatByType(data: any, type: string,
-  scale: number, offset: number): any {
+  scale: number, offset?: number): any {
+  const off = offset ? offset : 0;
   switch (type) {
     case 'date_time':
     case 'local_date_time':
@@ -91,12 +92,12 @@ function formatByType(data: any, type: string,
     case 'sint16':
     case 'uint32':
     case 'uint16':
-      return scale ? data / scale + offset : data;
+      return scale ? data / scale + off : data;
     case 'uint16_array':
       const data_array = data as number[]
       return data.map((dataItem: number) => {
         if (scale) {
-          return dataItem / scale + offset;
+          return dataItem / scale + off;
         }
         return dataItem;
       });
@@ -190,7 +191,8 @@ function applyOptions(data: any, field: string, options: FitParserOptions): any 
     case 'max_pos_vertical_speed':
     case 'avg_neg_vertical_speed':
     case 'max_neg_vertical_speed':
-      return convertTo(data, 'speedUnits', options.speedUnit);
+      // !! because options have already been checked
+      return convertTo(data, 'speedUnits', options.speedUnit!!);
     case 'distance':
     case 'total_distance':
     case 'enhanced_avg_altitude':
@@ -210,11 +212,11 @@ function applyOptions(data: any, field: string, options: FitParserOptions): any 
     case 'auto_wheelsize':
     case 'custom_wheelsize':
     case 'gps_accuracy':
-      return convertTo(data, 'lengthUnits', options.lengthUnit);
+      return convertTo(data, 'lengthUnits', options.lengthUnit!!);
     case 'temperature':
     case 'avg_temperature':
     case 'max_temperature':
-      return convertTo(data, 'temperatureUnits', options.temperatureUnit);
+      return convertTo(data, 'temperatureUnits', options.temperatureUnit!!);
     default:
       return data;
   }
@@ -249,7 +251,7 @@ export function readRecord(blob: Uint8Array, messageTypes: MessageTypes,
       const fDefIndex = startIndex + 6 + (i * 3);
       const baseType = blob[fDefIndex + 2];
       const { field, type } = message.getAttributes(blob[fDefIndex]); 
-      const fDef = {
+      const fDef: Def = {
         type,
         fDefNo: blob[fDefIndex],
         size: blob[fDefIndex + 1],
@@ -260,7 +262,7 @@ export function readRecord(blob: Uint8Array, messageTypes: MessageTypes,
         dataType: getFitMessageBaseType(baseType & 15),
       };
 
-        mTypeDef.fieldDefs.push(fDef);
+      mTypeDef.fieldDefs.push(fDef);
     }
 
     for (let i = 0; i < numberOfDeveloperDataFields; i++) {
@@ -326,21 +328,21 @@ export function readRecord(blob: Uint8Array, messageTypes: MessageTypes,
     const fDef = messageType.fieldDefs[i];
     const data = readData(blob, fDef, readDataFromIndex, options);
 
-    if (!isInvalidValue(data, fDef.mType)) {
-      if (fDef.isDeveloperField) {
+    if (!isInvalidValue(data, fDef.type)) {
+      if (fDef.isDeveloperField && fDef.name) {
         const field = fDef.name;
-        const { mType, scale, offset } = fDef;
+        const { type, scale, offset } = fDef;
 
-        fields[fDef.name] = applyOptions(formatByType(data, mType, scale, offset), field, options);
+        fields[fDef.name] = applyOptions(formatByType(data, type, scale, offset), field, options);
       } else {
-        const { field, mType, scale, offset } = message.getAttributes(fDef.fDefNo);
+        const { field, type, scale, offset } = message.getAttributes(fDef.fDefNo);
 
         if (field !== 'unknown' && field !== '' && field !== undefined) {
-          fields[field] = applyOptions(formatByType(data, mType, scale, offset), field, options);
+          fields[field] = applyOptions(formatByType(data, type, scale, offset), field, options);
         }
       }
 
-      if (message.name === 'record' && options.elapsedRecordField && fields.timestamp) {
+      if (message.name === 'record' && options.elapsedRecordField) {
         fields.elapsed_time = (fields.timestamp - startDate) / 1000;
         fields.timer_time = fields.elapsed_time - pausedTime;
       }

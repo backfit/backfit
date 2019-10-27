@@ -3,7 +3,7 @@ export declare function getMessageName(messageNum: number): string;
 export declare function getFieldObject(fieldNum: number, messageNum: number): Message;
 export interface Sdk {
     scConst: number;
-    options: object;
+    options: SdkOptions;
     messages: {
         [key: number]: MessageGroup;
     };
@@ -19,6 +19,9 @@ export interface SdkOptions {
         [unit: string]: UnitFields;
     };
     temperatureUnits: {
+        [unit: string]: UnitFields;
+    };
+    [unitKey: string]: {
         [unit: string]: UnitFields;
     };
 }
