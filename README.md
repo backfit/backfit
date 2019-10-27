@@ -37,7 +37,6 @@ fs.readFile(file, function (err, content) {
       console.log(err);
     })
 });
-
 ```
 
 ## API Documentation
@@ -68,7 +67,8 @@ Allowed properties :
   - `true`: Includes `elapsed_time`, containing the elapsed time in seconds since the first record, and `timer_time`, containing the time shown on the device, inside each `record` field
   - `false` (**default**)
 
-### BackFIT.parse(Buffer _file_): Promise<FitParserResult>
+### BackFIT.parse(Buffer _file_)
+Returns a Promise of FitParserResult, or throws Error.
 
 ## Contributors
 All started thanks to [Pierre Jacquier](https://github.com/pierremtb)
