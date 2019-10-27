@@ -1,4 +1,4 @@
-import FitParser from './../dist/fit-parser.js';
+import BackFIT from './../dist/backfit.js';
 import * as fs from 'fs';
 import * as util from 'util';
 
@@ -10,7 +10,7 @@ async function parseFitFile(file) {
   const content = await readFile(file)
 
   // Init the FitParser
-  const fitParser = new FitParser({
+const backfit = new BackFIT({
     force: true,
     speedUnit: 'km/h',
     lengthUnit: 'm',
@@ -21,7 +21,7 @@ async function parseFitFile(file) {
 
   // Get the results
   try {
-    const data = await fitParser.parse(content)
+    const data = await backfit.parse(content)
     console.log(data.records[0])
   } catch (e) {
     console.log(e)

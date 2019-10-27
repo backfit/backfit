@@ -4,7 +4,7 @@ import { getArrayBuffer, calculateCRC, readRecord } from './binary';
 import { DeveloperFields, FitParserOptions,
   FitParserResult, MessageTypes } from './types';
 
-export default class FitParser {
+export default class BackFIT {
 
   options: FitParserOptions = {
     force: true,
@@ -204,4 +204,3 @@ export default class FitParser {
     return await fitObj;
   }
 }
-

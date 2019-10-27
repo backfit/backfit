@@ -3,15 +3,20 @@
     "name": "jimmykane"
   },
   "bugs": {
-    "url": "https://github.com/jimmykane/fit-parser"
+    "url": "https://github.com/backfit/backfit/issues"
   },
   "contributors": [
     {
       "email": "jimmykane9@gmail.com",
       "name": "Dimitrios Kanellopoulos"
+    },
+    {
+      "email": "mail@pierrejacquier.com",
+      "url": "https://pierrejacquier.com",
+      "name": "Pierre Jacquier"
     }
   ],
-  "description": "Parse your .FIT files easily, directly from JS (Garmin, Polar, Suunto)",
+  "description": "Parse your .FIT files easily, directly from JS (Garmin, Polar, Suunto, etc.)",
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.4.0",
@@ -37,7 +42,7 @@
   },
   "directories": {},
   "engine": "node >= 0.10.x",
-  "homepage": "https://github.com/jimmykane/fit-parser",
+  "homepage": "https://github.com/backfit/backfit",
   "keywords": [
     "fit",
     "ant",
@@ -45,19 +50,24 @@
     "parse"
   ],
   "license": "MIT",
-  "main": "dist/fit-parser.js",
+  "main": "lib/backfit.js",
   "maintainers": [
     {
       "email": "jimmykane9@gmail.com",
       "name": "Dimitrios Kanellopoulos"
+    },
+    {
+      "email": "mail@pierrejacquier.com",
+      "url": "https://pierrejacquier.com",
+      "name": "Pierre Jacquier"
     }
   ],
-  "name": "fit-file-parser",
+  "name": "backfit",
   "optionalDependencies": {},
   "private": false,
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/jimmykane/fit-parser.git"
+    "url": "git+ssh://git@github.com/backfit/backfit.git"
   },
   "scripts": {
     "build": "npm run build:types && npm run build:js",
@@ -68,11 +78,5 @@
     "example-output": "npm run build; node examples/example.js examples/example.fit > examples/output.json",
     "example": "npm run build; node examples/example.js examples/example.fit"
   },
-  "version": "1.6.15",
-  "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.4.0",
-    "@typescript-eslint/parser": "^2.4.0",
-    "buffer": "^5.1.0",
-    "typescript-interface-generator": "0.0.6"
-  }
+  "version": "1.0.0"
 }

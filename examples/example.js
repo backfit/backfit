@@ -1,10 +1,10 @@
-var FitParser = require('./../lib/fit-parser.js').default;
+var BackFIT = require('./../lib/backfit.js').default;
 var fs = require('fs');
 
 var file = process.argv[2];
 
 fs.readFile(file, function (err, content) {
-  var fitParser = new FitParser({
+  var backfit = new BackFIT({
     force: true,
     speedUnit: 'km/h',
     lengthUnit: 'm',
@@ -13,7 +13,7 @@ fs.readFile(file, function (err, content) {
     mode: 'list',
   });
 
-  fitParser.parse(content)
+  backfit.parse(content)
     .then(function (data) {
       console.log(data.records[0]);
       // console.log(data);
@@ -22,4 +22,3 @@ fs.readFile(file, function (err, content) {
       console.log(err);
     })
 });
-

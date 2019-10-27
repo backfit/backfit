@@ -1,13 +1,13 @@
-# fit-file-parser
+# BackFIT
 
 > Parse your .FIT files easily, directly from JS.
-> Written in ES6. (Hope to change)
+> Written in TypeScript.
 
 
 ## Install
 
 ```
-$ npm install fit-file-parser --save
+$ npm install backfit --save
 ```
 
 ## How to use
@@ -15,40 +15,33 @@ $ npm install fit-file-parser --save
 See in [examples](./examples) folder:
 
 ```javascript
-// Require the module
-var FitParser = require('./../dist/fit-file-parser.js').default;
-
-// Read a .FIT file
+var BackFIT = require('./../lib/backfit.js').default;
 var fs = require('fs');
-fs.readFile('./example.fit', function (err, content) {
 
-  // Create a FitParser instance (options argument is optional)
-  var fitParser = new FitParser({
-    force: true,
+var file = process.argv[2];
+
+fs.readFile(file, function (err, content) {
+  var backfit = new BackFIT({
     speedUnit: 'km/h',
-    lengthUnit: 'km',
-    temperatureUnit: 'kelvin',
+    lengthUnit: 'm',
+    temperatureUnit: 'celsius',
     elapsedRecordField: true,
-    mode: 'cascade',
+    mode: 'list',
   });
-  
-  // Parse your file
-  fitParser.parse(content, function (error, data) {
-  
-    // Handle result of parse method
-    if (error) {
-      console.log(error);
-    } else {
-      console.log(JSON.stringify(data));
-    }
-    
-  });
-  
+
+  backfit.parse(content)
+    .then(function (data) {
+      console.log(data.records[0]);
+    })
+    .catch(function (err) {
+      console.log(err);
+    })
 });
+
 ```
 
 ## API Documentation
-### new FitParser(Object _options_)
+### BackFIT(FitParserOptions _options_)
 Needed to create a new instance. _options_ is optional, and is used to customize the returned object.
 
 Allowed properties :
@@ -75,8 +68,7 @@ Allowed properties :
   - `true`: Includes `elapsed_time`, containing the elapsed time in seconds since the first record, and `timer_time`, containing the time shown on the device, inside each `record` field
   - `false` (**default**)
 
-### fitParser.parse(Buffer _file_, Function _callback_)
-_callback_ receives two arguments, the first as a error String, and the second as Object, result of parsing.
+### BackFIT.parse(Buffer _file_): Promise<FitParserResult>
 
 ## Contributors
 All started thanks to [Pierre Jacquier](https://github.com/pierremtb)
