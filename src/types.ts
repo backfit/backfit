@@ -16,7 +16,7 @@ export interface FitParserResult {
   laps?: Fields;
   records?: Fields;
   events?: Fields;
-  device_infos?: Fields;
+  device_infos?: Fields[];
   developer_data_ids?: Fields;
   field_descriptions?: Fields;
   hrv?: Fields;
