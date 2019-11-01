@@ -1,5 +1,6 @@
 import { FITSDK } from './sdk';
 import { getFitMessage, getFitMessageBaseType } from './messages';
+import { Buffer } from 'buffer/';
 import { TypeDef, Def, Message, Fields, MessageTypes,
   DeveloperFields, FitParserOptions, ReadResult } from './types';
 

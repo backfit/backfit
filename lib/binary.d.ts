@@ -1,4 +1,4 @@
-/// <reference types="node" />
+import { Buffer } from 'buffer/';
 import { MessageTypes, DeveloperFields, FitParserOptions, ReadResult } from './types';
 export declare function addEndian(littleEndian: boolean, bytes: number[]): number;
 export declare function readRecord(blob: Uint8Array, messageTypes: MessageTypes, developerFields: DeveloperFields, startIndex: number, options: FitParserOptions, startDate: number, pausedTime: number): ReadResult;
