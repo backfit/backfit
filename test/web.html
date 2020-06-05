@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <script type="module" src="../src/web.js"></script>
+        <script>
+            async function onChangeFile(ev) {
+                const file = ev.currentTarget.files[0];
+                const buf = new Uint8Array(await file.arrayBuffer());
+                var fitParser = new backfit.FitParser({
+                    force: true,
+                    speedUnit: 'km/h',
+                    lengthUnit: 'm',
+                    temperatureUnit: 'celsius',
+                    elapsedRecordField: true,
+                    mode: 'list',
+                });
+
+                fitParser.parse(buf, function (error, data) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log(JSON.stringify(data));
+                        //console.log(data.records[0]);
+                    }
+                });
+            }
+
+            addEventListener('DOMContentLoaded', () => {
+                document.querySelector('#fit-file').addEventListener('change', onChangeFile);
+            });
+        </script>
+    </head>
+    <body>
+        <input id="fit-file" type="file" accept=".fit"/>
+    </body>
+</html>

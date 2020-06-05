@@ -1,6 +1,5 @@
-import { FIT } from './fit';
-import { getFitMessage, getFitMessageBaseType } from './messages';
-import { Buffer } from 'buffer/';
+import { FIT } from './fit.js';
+import { getFitMessage, getFitMessageBaseType } from './messages.js';
 
 export function addEndian(littleEndian, bytes) {
     let result = 0;
@@ -11,6 +10,16 @@ export function addEndian(littleEndian, bytes) {
 
     return result;
 }
+
+
+function array2str(arr) {
+    const out = [];
+    for (const x of arr) {
+        out.push(String.fromCharCode(x));
+    }
+    return out.join('');
+}
+
 
 function readData(blob, fDef, startIndex, options) {
     if (fDef.endianAbility === true) {
@@ -67,7 +76,7 @@ function readData(blob, fDef, startIndex, options) {
                 temp.push(blob[startIndex + i]);
             }
         }
-        return new Buffer(temp).toString('utf-8');
+        return array2str(temp);
     }
 
     if (fDef.type === 'byte_array') {

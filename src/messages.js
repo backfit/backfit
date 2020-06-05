@@ -1,4 +1,4 @@
-import { getMessageName, getFieldObject } from './fit';
+import { getMessageName, getFieldObject } from './fit.js';
 
 export function getFitMessage(messageNum) {
   return {

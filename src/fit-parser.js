@@ -1,4 +1,4 @@
-import { getArrayBuffer, calculateCRC, readRecord } from './binary';
+import { getArrayBuffer, calculateCRC, readRecord } from './binary.js';
 
 export default class FitParser {
   constructor(options = {}) {
