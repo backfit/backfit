@@ -153,7 +153,10 @@ export default class FitParser {
           break;
         default:
           if (messageType !== '') {
-            fitObj[messageType] = message;
+            if (!fitObj[messageType]) {
+                fitObj[messageType] = [];
+            }
+            fitObj[messageType].push(message);
           }
           break;
       }

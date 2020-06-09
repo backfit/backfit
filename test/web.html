@@ -14,11 +14,13 @@
                     mode: 'list',
                 });
 
+                const preEl = document.querySelector('#output');
                 fitParser.parse(buf, function (error, data) {
                     if (error) {
                         console.log(error);
                     } else {
                         console.log(JSON.stringify(data));
+                        preEl.innerText = JSON.stringify(data, null, 4);
                         //console.log(data.records[0]);
                     }
                 });
@@ -31,5 +33,6 @@
     </head>
     <body>
         <input id="fit-file" type="file" accept=".fit"/>
+        <pre id="output"></pre>
     </body>
 </html>
