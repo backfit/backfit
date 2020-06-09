@@ -1,3 +1,5 @@
+// vim: ts=2:sw=2:expandtab
+
 import { getArrayBuffer, calculateCRC, readRecord } from './binary.js';
 
 export default class FitParser {

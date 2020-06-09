@@ -47,18 +47,20 @@ function readData(blob, fDef, startIndex, options) {
                     return dataView.getFloat32(0, fDef.littleEndian);
                 case 'float64':
                     return dataView.getFloat64(0, fDef.littleEndian);
-                case 'uint32_array':
+                case 'uint32_array': {
                     const array32 = [];
                     for (let i = 0; i < fDef.size; i += 4) {
                         array32.push(dataView.getUint32(i, fDef.littleEndian));
                     }
                     return array32;
-                case 'uint16_array':
+                }
+                case 'uint16_array': {
                     const array = [];
                     for (let i = 0; i < fDef.size; i += 2) {
                         array.push(dataView.getUint16(i, fDef.littleEndian));
                     }
                     return array;
+                }
             }
         } catch (e) {
             if (!options.force){
@@ -111,23 +113,23 @@ function formatByType(data, type, scale, offset) {
             }
             // Quick check for a mask
             var values = [];
-            for (var key in FIT.types[type]) {
-                if (FIT.types[type].hasOwnProperty(key)) {
-                    values.push(FIT.types[type][key])
+            for (const key in FIT.types[type]) {
+                if (Object.prototype.hasOwnProperty.call(FIT.types[type], key)) {
+                    values.push(FIT.types[type][key]);
                 }
             }
             if (values.indexOf('mask') === -1){
                 return FIT.types[type][data];
             }
             var dataItem = {};
-            for (var key in FIT.types[type]) {
-                if (FIT.types[type].hasOwnProperty(key)) {
+            for (const key in FIT.types[type]) {
+                if (Object.prototype.hasOwnproperty.call(FIT.types[type], key)) {
                     if (FIT.types[type][key] === 'mask'){
-                        dataItem.value = data & key
+                        dataItem.value = data & key;
                     } else {
                         // Not sure if we need the >> 7 and casting to boolean but from all
                         // the masked props of fields so far this seems to be the case
-                        dataItem[FIT.types[type][key]] = !!((data & key) >> 7)
+                        dataItem[FIT.types[type][key]] = !!((data & key) >> 7);
                     }
                 }
             }
