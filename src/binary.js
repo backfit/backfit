@@ -60,7 +60,7 @@ function readData(blob, fDef, startIndex, options) {
                     }
                     return array;
             }
-        }catch (e) {
+        } catch (e) {
             if (!options.force){
                 throw e;
             }
@@ -124,8 +124,10 @@ function formatByType(data, type, scale, offset) {
                 if (FIT.types[type].hasOwnProperty(key)) {
                     if (FIT.types[type][key] === 'mask'){
                         dataItem.value = data & key
-                    }else{
-                        dataItem[FIT.types[type][key]] = !!((data & key) >> 7) // Not sure if we need the >> 7 and casting to boolean but from all the masked props of fields so far this seems to be the case
+                    } else {
+                        // Not sure if we need the >> 7 and casting to boolean but from all
+                        // the masked props of fields so far this seems to be the case
+                        dataItem[FIT.types[type][key]] = !!((data & key) >> 7)
                     }
                 }
             }
