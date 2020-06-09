@@ -5,25 +5,16 @@
             async function onChangeFile(ev) {
                 const file = ev.currentTarget.files[0];
                 const buf = new Uint8Array(await file.arrayBuffer());
-                var fitParser = new backfit.FitParser({
-                    force: true,
+                const fitParser = new backfit.FitParser({
                     speedUnit: 'km/h',
                     lengthUnit: 'm',
                     temperatureUnit: 'celsius',
                     elapsedRecordField: true,
                     mode: 'list',
                 });
-
                 const preEl = document.querySelector('#output');
-                fitParser.parse(buf, function (error, data) {
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        console.log(JSON.stringify(data));
-                        preEl.innerText = JSON.stringify(data, null, 4);
-                        //console.log(data.records[0]);
-                    }
-                });
+                const data = fitParser.parse(buf);
+                preEl.innerText = JSON.stringify(data, null, 4);
             }
 
             addEventListener('DOMContentLoaded', () => {

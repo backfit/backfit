@@ -3,7 +3,6 @@ import { getArrayBuffer, calculateCRC, readRecord } from './binary.js';
 export default class FitParser {
   constructor(options = {}) {
     this.options = {
-      force: options.force != null ? options.force : true,
       speedUnit: options.speedUnit || 'm/s',
       lengthUnit: options.lengthUnit || 'm',
       temperatureUnit: options.temperatureUnit || 'celsius',
@@ -12,59 +11,36 @@ export default class FitParser {
     };
   }
 
-  parse(content, callback) {
+  parse(content) {
     const blob = new Uint8Array(getArrayBuffer(content));
-
     if (blob.length < 12) {
-      callback('File to small to be a FIT file', {});
-      if (!this.options.force) {
-        return;
-      }
+      throw new TypeError('File to small to be a FIT file');
     }
-
     const headerLength = blob[0];
     if (headerLength !== 14 && headerLength !== 12) {
-      callback('Incorrect header size', {});
-      if (!this.options.force) {
-        return;
-      }
+      throw new TypeError('Incorrect header size');
     }
-
     let fileTypeString = '';
     for (let i = 8; i < 12; i++) {
       fileTypeString += String.fromCharCode(blob[i]);
     }
     if (fileTypeString !== '.FIT') {
-      callback('Missing \'.FIT\' in header', {});
-      if (!this.options.force) {
-        return;
-      }
+      throw new TypeError('Missing \'.FIT\' in header');
     }
-
     if (headerLength === 14) {
       const crcHeader = blob[12] + (blob[13] << 8);
       const crcHeaderCalc = calculateCRC(blob, 0, 12);
       if (crcHeader !== crcHeaderCalc) {
-        // callback('Header CRC mismatch', {});
-        // TODO: fix Header CRC check
-        if (!this.options.force) {
-          return;
-        }
+        throw new Error('Header CRC mismatch');
       }
     }
     const dataLength = blob[4] + (blob[5] << 8) + (blob[6] << 16) + (blob[7] << 24);
     const crcStart = dataLength + headerLength;
     const crcFile = blob[crcStart] + (blob[crcStart + 1] << 8);
     const crcFileCalc = calculateCRC(blob, headerLength === 12 ? 0 : headerLength, crcStart);
-
     if (crcFile !== crcFileCalc) {
-      // callback('File CRC mismatch', {});
-      // TODO: fix File CRC check
-      if (!this.options.force) {
-        return;
-      }
+      throw new Error('File CRC mismatch');
     }
-
     const fitObj = {};
     const sessions = [];
     const laps = [];
@@ -91,11 +67,12 @@ export default class FitParser {
     let pausedTime = 0;
 
     while (loopIndex < crcStart) {
-      const { nextIndex,
+      const {
+        nextIndex,
         messageType,
-        message } = readRecord(blob, messageTypes, developerFields, loopIndex, this.options, startDate, pausedTime);
+        message
+      } = readRecord(blob, messageTypes, developerFields, loopIndex, this.options, startDate, pausedTime);
       loopIndex = nextIndex;
-
       switch (messageType) {
         case 'lap':
           if (isCascadeNeeded) {
@@ -161,7 +138,6 @@ export default class FitParser {
           break;
       }
     }
-
     if (isCascadeNeeded) {
       fitObj.activity = fitObj.activity || {};
       fitObj.activity.sessions = sessions;
@@ -180,7 +156,6 @@ export default class FitParser {
       fitObj.dive_gases = dive_gases;
       fitObj.course_points = course_points;
     }
-
-    callback(null, fitObj);
+    return fitObj;
   }
 }
