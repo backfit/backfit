@@ -13,17 +13,32 @@
                     mode: 'list',
                 });
                 const preEl = document.querySelector('#output');
-                const data = fitParser.parse(buf);
+                const data = fitParser.decode(buf);
                 preEl.innerText = JSON.stringify(data, null, 4);
+            }
+
+            function onMakeSegmentFile() {
+                const fitParser = new backfit.FitParser({});
+                const buf = fitParser.encode();
+                const link = document.createElement('a');
+                link.download = 'hello.fit';
+                link.href = URL.createObjectURL(new Blob([buf]));
+                try {
+                    link.click();
+                } finally {
+                    URL.revokeObjectURL(link.href);
+                }
             }
 
             addEventListener('DOMContentLoaded', () => {
                 document.querySelector('#fit-file').addEventListener('change', onChangeFile);
+                document.querySelector('#make-segment').addEventListener('click', onMakeSegmentFile);
             });
         </script>
     </head>
     <body>
         <input id="fit-file" type="file" accept=".fit"/>
+        <a href="#" id="make-segment">Make segment file</a>
         <pre id="output"></pre>
     </body>
 </html>
