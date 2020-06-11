@@ -123,7 +123,7 @@ function formatByType(data, type, scale, offset) {
             }
             var dataItem = {};
             for (const key in FIT.types[type]) {
-                if (Object.prototype.hasOwnproperty.call(FIT.types[type], key)) {
+                if (Object.prototype.hasOwnProperty.call(FIT.types[type], key)) {
                     if (FIT.types[type][key] === 'mask'){
                         dataItem.value = data & key;
                     } else {
@@ -137,45 +137,83 @@ function formatByType(data, type, scale, offset) {
     }
 }
 
+export const invalids = {
+    enum: {
+        value: 0xFF,
+        type: Uint8Array
+    },
+    sint8: {
+        value: 0x7F,
+        type: Uint8Array
+    },
+    uint8: {
+        value: 0xFF,
+        type: Uint8Array
+    },
+    sint16: {
+        value: 0x7FFF,
+        type: Uint16Array
+    },
+    uint16: {
+        value: 0xFFFF,
+        type: Uint16Array
+    },
+    sint32: {
+        value: 0x7FFFFFFF,
+        type: Uint32Array
+    },
+    uint32: {
+        value: 0xFFFFFFFF,
+        type: Uint32Array
+    },
+    string: {
+        value: 0x00,
+        type: Uint8Array
+    },
+    float32: {
+        value: 0xFFFFFFFF,
+        type: Uint32Array
+    },
+    float64: {
+        value: 0xFFFFFFFFFFFFFFFFn,
+        type: BigUint64Array
+    },
+    uint8z: {
+        value: 0x00,
+        type: Uint8Array
+    },
+    uint16z: {
+        value: 0x0000,
+        type: Uint16Array
+    },
+    uint32z: {
+        value: 0x000000,
+        type: Uint32Array
+    },
+    byte: {
+        value: 0xFF,
+        type: Uint8Array
+    },
+    sint64: {
+        value: 0x7FFFFFFFFFFFFFFFn,
+        type: BigUint64Array
+    },
+    uint64: {
+        value: 0xFFFFFFFFFFFFFFFFn,
+        type: BigUint64Array
+    },
+    uint64z: {
+        value: 0x0000000000000000n,
+        type: BigUint64Array
+    },
+};
+
 function isInvalidValue(data, type) {
-    switch (type) {
-        case 'enum':
-            return data === 0xFF;
-        case 'sint8':
-            return data === 0x7F;
-        case 'uint8':
-            return data === 0xFF;
-        case 'sint16':
-            return data === 0x7FFF;
-        case 'uint16':
-            return data === 0xFFFF;
-        case 'sint32':
-            return data === 0x7FFFFFFF;
-        case 'uint32':
-            return data === 0xFFFFFFFF;
-        case 'string':
-            return data === 0x00;
-        case 'float32':
-            return data === 0xFFFFFFFF;
-        case 'float64':
-            return data === 0xFFFFFFFFFFFFFFFF;
-        case 'uint8z':
-            return data === 0x00;
-        case 'uint16z':
-            return data === 0x0000;
-        case 'uint32z':
-            return data === 0x000000;
-        case 'byte':
-            return data === 0xFF;
-        case 'sint64':
-            return data === 0x7FFFFFFFFFFFFFFF;
-        case 'uint64':
-            return data === 0xFFFFFFFFFFFFFFFF;
-        case 'uint64z':
-            return data === 0x0000000000000000;
-        default:
-            return false;
+    const invalid = invalids[type];
+    if (invalid === undefined) {
+        return false;
     }
+    return invalid.value === data;
 }
 
 function convertTo(data, unitsList, speedUnit) {
@@ -390,7 +428,7 @@ export function calculateCRC(blob, start, end) {
     ];
 
     let crc = 0;
-    for (let i = start; i < end; i++) {
+    for (let i = (start || 0); i < (end || blob.byteLength); i++) {
         const byte = blob[i];
         let tmp = crcTable[crc & 0xF];
         crc = (crc >> 4) & 0x0FFF;
@@ -401,4 +439,25 @@ export function calculateCRC(blob, start, end) {
     }
 
     return crc;
+}
+
+export function leBytes(value, TypedArray) {
+    return new Uint8Array(new TypedArray([value]).buffer);
+}
+
+export function uint32leBytes(value) {
+    return leBytes(value, Uint32Array);
+}
+
+export function uint16leBytes(value) {
+    return leBytes(value, Uint16Array);
+}
+
+export function baseTypeValue(key) {
+    for (const [id, label] of Object.entries(FIT.types.fit_base_type)) {
+        if (label === key) {
+            return id;
+        }
+    }
+    throw new ReferenceError(`Unknown base type: ${key}`);
 }
