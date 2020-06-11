@@ -1,3 +1,4 @@
+// vim: ts=2:sw=2:expandtab
 // some unit conversion constants
 const metersInOneKilometer = 1000;
 const secondsInOneHour = 3600;
@@ -875,6 +876,7 @@ export const FIT = {
   },
   types: {
     file: {
+      type: 'enum',
       1: 'device',
       2: 'settings',
       3: 'sport',
@@ -897,6 +899,7 @@ export const FIT = {
       254: 'mfg_range_max',
     },
     mesg_num: {
+      type: 'uint16',
       0: 'file_id',
       1: 'capabilities',
       2: 'device_settings',
@@ -986,39 +989,47 @@ export const FIT = {
       65534: 'mfg_range_max',
     },
     checksum: {
+      type: 'uint8',
       0: 'clear',
       1: 'ok',
     },
     file_flags: {
+      type: 'uint8z',
       0: 0,
       2: 'read',
       4: 'write',
       8: 'erase',
     },
     mesg_count: {
+      type: 'enum',
       0: 'num_per_file',
       1: 'max_per_file',
       2: 'max_per_file_type',
     },
     date_time: {
+      type: 'uint32',
       0: 0,
       268435456: 'min',
     },
     local_date_time: {
+      type: 'uint32',
       0: 0,
       268435456: 'min',
     },
     message_index: {
+      type: 'uint16',
       0: 0,
       4095: 'mask',
       28672: 'reserved',
       32768: 'selected',
     },
     gender: {
+      type: 'enum',
       0: 'female',
       1: 'male',
     },
     language: {
+      type: 'enum',
       0: 'english',
       1: 'french',
       2: 'italian',
@@ -1060,6 +1071,7 @@ export const FIT = {
       254: 'custom',
     },
     language_bits_0: {
+      type: 'uint8z',
       0: 0,
       1: 'english',
       2: 'french',
@@ -1071,6 +1083,7 @@ export const FIT = {
       128: 'danish',
     },
     language_bits_1: {
+      type: 'uint8z',
       0: 0,
       1: 'dutch',
       2: 'finnish',
@@ -1082,6 +1095,7 @@ export const FIT = {
       128: 'slovakian'
     },
     language_bits_2: {
+      type: 'uint8z',
       0: 0,
       1: 'slovenian',
       2: 'swedish',
@@ -1093,6 +1107,7 @@ export const FIT = {
       128: 'farsi',
     },
     language_bits_3: {
+      type: 'uint8z',
       0: 0,
       1: 'bulgarian',
       2: 'romanian',
@@ -1104,6 +1119,7 @@ export const FIT = {
       128: 'hebrew',
     },
     language_bits_4: {
+      type: 'uint8z',
       0: 0,
       1: 'brazilian_portuguese',
       2: 'indonesian',
@@ -1113,6 +1129,7 @@ export const FIT = {
       32: 'mongolian',
     },
     time_zone: {
+      type: 'enum',
       0: 'almaty',
       1: 'bangkok',
       2: 'bombay',
@@ -1221,20 +1238,24 @@ export const FIT = {
       254: 'automatic',
     },
     display_measure: {
+      type: 'enum',
       0: 'metric',
       1: 'statute',
       2: 'nautical',
     },
     display_heart: {
+      type: 'enum',
       0: 'bpm',
       1: 'max',
       2: 'reserve',
     },
     display_power: {
+      type: 'enum',
       0: 'watts',
       1: 'percent_ftp',
     },
     display_position: {
+      type: 'enum',
       0: 'degree',
       1: 'degree_minute',
       2: 'degree_minute_second',
@@ -1279,11 +1300,13 @@ export const FIT = {
       41: 'swedish_ref_99_grid'
     },
     switch: {
+      type: 'enum',
       0: 'off',
       1: 'on',
       2: 'auto',
     },
     sport: {
+      type: 'enum',
       0: 'generic',
       1: 'running',
       2: 'cycling',
@@ -1337,6 +1360,7 @@ export const FIT = {
       254: 'all',
     },
     sport_bits_0: {
+      type: 'uint8z',
       0: 0,
       1: 'generic',
       2: 'running',
@@ -1348,6 +1372,7 @@ export const FIT = {
       128: 'soccer',
     },
     sport_bits_1: {
+      type: 'uint8z',
       0: 0,
       1: 'tennis',
       2: 'american_football',
@@ -1359,6 +1384,7 @@ export const FIT = {
       128: 'rowing',
     },
     sport_bits_2: {
+      type: 'uint8z',
       0: 0,
       1: 'mountaineering',
       2: 'hiking',
@@ -1370,6 +1396,7 @@ export const FIT = {
       128: 'boating',
     },
     sport_bits_3: {
+      type: 'uint8z',
       0: 0,
       1: 'driving',
       2: 'golf',
@@ -1381,6 +1408,7 @@ export const FIT = {
       128: 'rock_climbing',
     },
     sport_bits_4: {
+      type: 'uint8z',
       0: 0,
       1: 'sailing',
       2: 'ice_skating',
@@ -1392,6 +1420,7 @@ export const FIT = {
       128: 'wakeboarding',
     },
     sport_bits_5: {
+      type: 'uint8z',
       0: 0,
       1: 'water_skiing',
       2: 'kayaking',
@@ -1403,10 +1432,12 @@ export const FIT = {
       128: 'boxing',
     },
     sport_bits_6: {
+      type: 'uint8z',
       0: 0,
       1: 'floor_climbing',
     },
     sub_sport: {
+      type: 'enum',
       0: 'generic',
       1: 'treadmill',
       2: 'street',
@@ -1470,6 +1501,7 @@ export const FIT = {
       254: 'all',
     },
     sport_event: {
+      type: 'enum',
       0: 'uncategorized',
       1: 'geocaching',
       2: 'fitness',
@@ -1481,22 +1513,26 @@ export const FIT = {
       8: 'touring',
     },
     activity: {
+      type: 'enum',
       0: 'manual',
       1: 'auto_multi_sport',
     },
     intensity: {
+      type: 'enum',
       0: 'active',
       1: 'rest',
       2: 'warmup',
       3: 'cooldown',
     },
     session_trigger: {
+      type: 'enum',
       0: 'activity_end',
       1: 'manual',
       2: 'auto_multi_sport',
       3: 'fitness_equipment',
     },
     autolap_trigger: {
+      type: 'enum',
       0: 'time',
       1: 'distance',
       2: 'position_start',
@@ -1506,6 +1542,7 @@ export const FIT = {
       6: 'off',
     },
     lap_trigger: {
+      type: 'enum',
       0: 'manual',
       1: 'time',
       2: 'distance',
@@ -1517,6 +1554,7 @@ export const FIT = {
       8: 'fitness_equipment',
     },
     time_mode: {
+      type: 'enum',
       0: 'hour12',
       1: 'hour24',
       2: 'military',
@@ -1525,6 +1563,7 @@ export const FIT = {
       5: 'utc'
     },
     backlight_mode: {
+      type: 'enum',
       0: 'off',
       1: 'manual',
       2: 'key_and_messages',
@@ -1534,13 +1573,16 @@ export const FIT = {
       6: 'key_and_messages_and_smart_notifications',
     },
     date_mode: {
+      type: 'enum',
       0: 'day_month',
       1: 'month_day',
     },
     backlight_timeout: {
+      type: 'uint8',
       0: 'infinite',
     },
     event: {
+      type: 'enum',
       0: 'timer',
       3: 'workout',
       4: 'workout_step',
@@ -1579,6 +1621,7 @@ export const FIT = {
       47: 'comm_timeout',
     },
     event_type: {
+      type: 'enum',
       0: 'start',
       1: 'stop',
       2: 'consecutive_depreciated',
@@ -1591,44 +1634,52 @@ export const FIT = {
       9: 'stop_disable_all',
     },
     timer_trigger: {
+      type: 'enum',
       0: 'manual',
       1: 'auto',
       2: 'fitness_equipment',
     },
     fitness_equipment_state: {
+      type: 'enum',
       0: 'ready',
       1: 'in_use',
       2: 'paused',
       3: 'unknown',
     },
     tone: {
+      type: 'enum',
       0: 'off',
       1: 'tone',
       2: 'vibrate',
       3: 'tone_and_vibrate',
     },
     autoscroll: {
+      type: 'enum',
       0: 'none',
       1: 'slow',
       2: 'medium',
       3: 'fast',
     },
     activity_class: {
+      type: 'enum',
       0: 0,
       100: 'level_max',
       127: 'level',
       128: 'athlete',
     },
     hr_zone_calc: {
+      type: 'enum',
       0: 'custom',
       1: 'percent_max_hr',
       2: 'percent_hrr',
     },
     pwr_zone_calc: {
+      type: 'enum',
       0: 'custom',
       1: 'percent_ftp',
     },
     wkt_step_duration: {
+      type: 'enum',
       0: 'time',
       1: 'distance',
       2: 'hr_less_than',
@@ -1661,6 +1712,7 @@ export const FIT = {
       29: 'reps'
     },
     wkt_step_target: {
+      type: 'enum',
       0: 'speed',
       1: 'heart_rate',
       2: 'open',
@@ -1677,6 +1729,7 @@ export const FIT = {
       13: 'heart_rate_lap',
     },
     goal: {
+      type: 'enum',
       0: 'time',
       1: 'distance',
       2: 'calories',
@@ -1686,6 +1739,7 @@ export const FIT = {
       6: 'active_minutes',
     },
     goal_recurrence: {
+      type: 'enum',
       0: 'off',
       1: 'daily',
       2: 'weekly',
@@ -1694,15 +1748,18 @@ export const FIT = {
       5: 'custom',
     },
     goal_source: {
+      type: 'enum',
       0: 'auto',
       1: 'community',
       2: 'user',
     },
     schedule: {
+      type: 'enum',
       0: 'workout',
       1: 'course',
     },
     course_point: {
+      type: 'enum',
       0: 'generic',
       1: 'summit',
       2: 'valley',
@@ -1731,6 +1788,7 @@ export const FIT = {
       25: 'segment_end',
     },
     manufacturer: {
+      type: 'uint16',
       0: 0,
       1: 'garmin',
       2: 'garmin_fr405_antfs',
@@ -1898,6 +1956,7 @@ export const FIT = {
       5759: 'actigraphcorp',
     },
     garmin_product: {
+      type: 'uint16',
       0: 'hrm_bike',
       1: 'hrm1',
       2: 'axh01',
@@ -2059,6 +2118,7 @@ export const FIT = {
       65534: 'connect',
     },
     antplus_device_type: {
+      type: 'uint8',
       0: 0,
       1: 'antfs',
       11: 'bike_power',
@@ -2085,12 +2145,14 @@ export const FIT = {
       124: 'stride_speed_distance',
     },
     ant_network: {
+      type: 'enum',
       0: 'public',
       1: 'antplus',
       2: 'antfs',
       3: 'private',
     },
     workout_capabilities: {
+      type: 'uint32z',
       0: 0,
       1: 'interval',
       2: 'custom',
@@ -2108,6 +2170,7 @@ export const FIT = {
       16384: 'protected',
     },
     battery_status: {
+      type: 'uint8',
       0: 0,
       1: 'new',
       2: 'good',
@@ -2118,10 +2181,12 @@ export const FIT = {
       7: 'unknown',
     },
     hr_type: {
+      type: 'enum',
       0: 'normal',
       1: 'irregular',
     },
     course_capabilities: {
+      type: 'uint32z',
       0: 0,
       1: 'processed',
       2: 'valid',
@@ -2136,18 +2201,22 @@ export const FIT = {
       1024: 'bikeway',
     },
     weight: {
+      type: 'uint16',
       0: 0,
       65534: 'calculating',
     },
-    workout_hr: {
+    workout_hr: { // 0 - 100 is % of max, > 100 == bpm (255 max) plus 100
+      type: 'uint32',
       0: 0,
       100: 'bpm_offset',
     },
-    workout_power: {
+    workout_power: { // 0 - 1000 is % of FTP, > 1000 == watts plus 1000
+      type: 'uint32',
       0: 0,
       1000: 'watts_offset',
     },
     bp_status: {
+      type: 'enum',
       0: 'no_error',
       1: 'error_incomplete_data',
       2: 'error_no_measurement',
@@ -2155,6 +2224,7 @@ export const FIT = {
       4: 'error_irregular_heart_rate',
     },
     user_local_id: {
+      type: 'uint16',
       0: 'local_min',
       15: 'local_max',
       16: 'stationary_min',
@@ -2163,6 +2233,7 @@ export const FIT = {
       65534: 'portable_max',
     },
     swim_stroke: {
+      type: 'enum',
       0: 'freestyle',
       1: 'backstroke',
       2: 'breaststroke',
@@ -2172,6 +2243,7 @@ export const FIT = {
       6: 'im',
     },
     activity_type: {
+      type: 'enum',
       0: 'generic',
       1: 'running',
       2: 'cycling',
@@ -2183,6 +2255,7 @@ export const FIT = {
       254: 'all'
     },
     activity_subtype: {
+      type: 'enum',
       0: 'generic',
       1: 'treadmill',
       2: 'street',
@@ -2205,29 +2278,35 @@ export const FIT = {
       254: 'all',
     },
     activity_level: {
+      type: 'enum',
       0: 'low',
       1: 'medium',
       2: 'high',
     },
     side: {
+      type: 'enum',
       0: 'right',
       1: 'left',
     },
     left_right_balance: {
+      type: 'uint16',
       0: 0,
       127: 'mask',
       128: 'right',
     },
     left_right_balance_100: {
+      type: 'enum',
       0: 0,
       16383: 'mask',
       32768: 'right',
     },
     length_type: {
+      type: 'enum',
       0: 'idle',
       1: 'active',
     },
     day_of_week: {
+      type: 'enum',
       0: 'sunday',
       1: 'monday',
       2: 'tuesday',
@@ -2237,6 +2316,7 @@ export const FIT = {
       6: 'saturday',
     },
     connectivity_capabilities: {
+      type: 'uint32z',
       0: 0,
       1: 'bluetooth',
       2: 'bluetooth_le',
@@ -2272,11 +2352,13 @@ export const FIT = {
       2147483648: 'instant_input',
     },
     weather_report: {
+      type: 'enum',
       0: 'current',
       1: 'hourly_forecast',
       2: 'daily_forecast'
     },
     weather_status: {
+      type: 'enum',
       0: 'clear',
       1: 'partly_cloudy',
       2: 'mostly_cloudy',
@@ -2300,6 +2382,7 @@ export const FIT = {
       22: 'cloudy',
     },
     weather_severity: {
+      type: 'enum',
       0: 'unknown',
       1: 'warning',
       2: 'watch',
@@ -2307,6 +2390,7 @@ export const FIT = {
       4: 'statement',
     },
     weather_severe_type: {
+      type: 'enum',
       0: 'unspecified',
       1: 'tornado',
       2: 'tsunami',
@@ -2394,6 +2478,7 @@ export const FIT = {
       84: 'special_weather',
     },
     stroke_type: {
+      type: 'enum',
       0: 'no_event',
       1: 'other',
       2: 'serve',
@@ -2402,6 +2487,7 @@ export const FIT = {
       5: 'smash',
     },
     body_location: {
+      type: 'enum',
       0: 'left_leg',
       1: 'left_calf',
       2: 'left_shin',
@@ -2444,10 +2530,12 @@ export const FIT = {
       39: 'waist_right',
     },
     segment_lap_status: {
+      type: 'enum',
       0: 'end',
       1: 'fail',
     },
     segment_leaderboard_type: {
+      type: 'enum',
       0: 'overall',
       1: 'personal_best',
       2: 'connections',
@@ -2461,15 +2549,18 @@ export const FIT = {
       10: 'club_leader',
     },
     segment_delete_status: {
+      type: 'enum',
       0: 'do_not_delete',
       1: 'delete_one',
       2: 'delete_all',
     },
     segment_selection_type: {
+      type: 'enum',
       0: 'starred',
       1: 'suggested',
     },
     source_type: {
+      type: 'enum',
       0: 'ant',
       1: 'antplus',
       2: 'bluetooth',
@@ -2478,6 +2569,7 @@ export const FIT = {
       5: 'local',
     },
     display_orientation: {
+      type: 'enum',
       0: 'auto',
       1: 'portrait',
       2: 'landscape',
@@ -2485,6 +2577,7 @@ export const FIT = {
       4: 'landscape_flipped',
     },
     workout_equipment: {
+      type: 'enum',
       0: 'none',
       1: 'swim_fins',
       2: 'swim_kickboard',
@@ -2493,34 +2586,40 @@ export const FIT = {
       5: 'swim_snorkel',
     },
     watchface_mode: {
+      type: 'enum',
       0: 'digital',
       1: 'analog',
       2: 'connect_iq',
       3: 'disabled',
     },
     digital_watchface_layout: {
+      type: 'enum',
       0: 'traditional',
       1: 'modern',
       2: 'bold',
     },
     analog_watchface_layout: {
+      type: 'enum',
       0: 'minimal',
       1: 'traditional',
       2: 'modern',
     },
     rider_position_type: {
+      type: 'enum',
       0: 'seated',
       1: 'standing',
       2: 'transition_to_seated',
       3: 'transition_to_standing',
     },
     power_phase_type: {
+      type: 'enum',
       0: 'power_phase_start_angle',
       1: 'power_phase_end_angle',
       2: 'power_phase_arc_length',
       3: 'power_phase_center',
     },
     camera_event_type: {
+      type: 'enum',
       0: 'video_start',
       1: 'video_split',
       2: 'video_end',
@@ -2536,36 +2635,42 @@ export const FIT = {
       14: 'video_second_stream_resume',
     },
     sensor_type: {
+      type: 'enum',
       0: 'accelerometer',
       1: 'gyroscope',
       2: 'compass',
       3: 'barometer'
     },
     bike_light_network_config_type: {
+      type: 'enum',
       0: 'auto',
       4: 'individual',
       5: 'high_visibility',
       6: 'trail'
     },
     comm_timeout_type: {
+      type: 'uint16',
       0: 'wildcard_pairing_timeout',
       1: 'pairing_timeout',
       2: 'connection_lost',
       3: 'connection_timeout',
     },
     camera_orientation_type: {
+      type: 'enum',
       0: 'camera_orientation_0',
       1: 'camera_orientation_90',
       2: 'camera_orientation_180',
       3: 'camera_orientation_270',
     },
     attitude_stage: {
+      type: 'enum',
       0: 'failed',
       1: 'aligning',
       2: 'degraded',
       3: 'valid',
     },
     attitude_validity: {
+      type: 'uint16',
       0: 0,
       1: 'track_angle_heading_valid',
       2: 'pitch_valid',
@@ -2582,6 +2687,7 @@ export const FIT = {
       4096: 'magnetic_heading',
     },
     auto_sync_frequency: {
+      type: 'enum',
       0: 'never',
       1: 'occasionally',
       2: 'frequent',
@@ -2589,6 +2695,7 @@ export const FIT = {
       4: 'remote',
     },
     exd_layout: {
+      type: 'enum',
       0: 'full_screen',
       1: 'half_vertical',
       2: 'half_horizontal',
@@ -2599,6 +2706,7 @@ export const FIT = {
       7: 'half_horizontal_top_split',
     },
     exd_display_type: {
+      type: 'enum',
       0: 'numerical',
       1: 'simple',
       2: 'graph',
@@ -2612,6 +2720,7 @@ export const FIT = {
       10: 'gauge',
     },
     exd_data_units: {
+      type: 'enum',
       0: 'no_units',
       1: 'laps',
       2: 'miles_per_hour',
@@ -2664,6 +2773,7 @@ export const FIT = {
       49: 'eight_cardinal'
     },
     exd_qualifiers: {
+      type: 'enum',
       0: 'no_qualifier',
       1: 'instantaneous',
       2: 'average',
@@ -2710,6 +2820,7 @@ export const FIT = {
       250: 'zone_1',
     },
     exd_descriptors: {
+      type: 'enum',
       0: 'bike_light_battery_status',
       1: 'beam_angle_status',
       2: 'batery_level',
@@ -2809,6 +2920,7 @@ export const FIT = {
       96: 'vam'
     },
     auto_activity_detect: {
+      type: 'uint32',
       0: 'none',
       1: 'running',
       2: 'cycling',
@@ -2818,6 +2930,7 @@ export const FIT = {
       32: 'sedentary',
     },
     supported_exd_screen_layouts: {
+      type: 'uint32z',
       0: 0,
       1: 'full_screen',
       2: 'half_vertical',
@@ -2829,6 +2942,7 @@ export const FIT = {
       128: 'half_horizontal_top_split'
     },
     fit_base_type: {
+      type: 'uint8',
       0: 'enum',
       1: 'sint8',
       2: 'uint8',
@@ -2848,6 +2962,7 @@ export const FIT = {
       144: 'uint64z'
     },
     turn_type: {
+      type: 'enum',
       0: 'arriving_idx',
       1: 'arriving_left_idx',
       2: 'arriving_right_idx',
@@ -2888,19 +3003,23 @@ export const FIT = {
       37: 'icon_idx_cnt',
     },
     bike_light_beam_angle_mode: {
+      type: 'uint8',
       0: 'manual',
       1: 'auto',
     },
     fit_base_unit: {
+      type: 'uint16',
       0: 'other',
       1: 'kilogram',
       2: 'pound'
     },
     set_type: {
+      type: 'uint8',
       0: 'rest',
       1: 'active',
     },
     exercise_category: {
+      type: 'uint16',
       0: 'bench_press',
       1: 'calf_raise',
       2: 'cardio',
@@ -2937,6 +3056,7 @@ export const FIT = {
       65534: 'unknown',
     },
     bench_press_exercise_name: {
+      type: 'uint16',
       0: 'alternating_dumbbell_chest_press_on_swiss_ball',
       1: 'barbell_bench_press',
       2: 'barbell_board_bench_press',
@@ -2966,6 +3086,7 @@ export const FIT = {
       26: 'alternating_dumbbell_chest_press',
     },
     calf_raise_exercise_name: {
+      type: 'uint16',
       0: '3_way_calf_raise',
       1: '3_way_weighted_calf_raise',
       2: '3_way_single_leg_calf_raise',
@@ -2989,6 +3110,7 @@ export const FIT = {
       20: 'standing_dumbbell_calf_raise',
     },
     cardio_exercise_name: {
+      type: 'uint16',
       0: 'bob_and_weave_circle',
       1: 'weighted_bob_and_weave_circle',
       2: 'cardio_core_crawl',
@@ -3013,6 +3135,7 @@ export const FIT = {
       21: 'weighted_triple_under',
     },
     carry_exercise_name: {
+      type: 'uint16',
       0: 'bar_holds',
       1: 'farmers_walk',
       2: 'farmers_walk_on_toes',
@@ -3020,6 +3143,7 @@ export const FIT = {
       4: 'overhead_carry',
     },
     chop_exercise_name: {
+      type: 'uint16',
       0: 'cable_pull_through',
       1: 'cable_rotational_lift',
       2: 'cable_woodchop',
@@ -3045,6 +3169,7 @@ export const FIT = {
       22: 'standing_stability_reverse_chop',
     },
     core_exercise_name: {
+      type: 'uint16',
       0: 'abs_jabs',
       1: 'weighted_abs_jabs',
       2: 'alternating_plate_reach',
@@ -3120,6 +3245,7 @@ export const FIT = {
       72: 'the_hundred',
     },
     crunch_exercise_name: {
+      type: 'uint16',
       0: 'bicycle_crunch',
       1: 'cable_crunch',
       2: 'circular_arm_crunch',
@@ -3207,6 +3333,7 @@ export const FIT = {
       84: 'straight_leg_crunch_with_ball',
     },
     curl_exercise_name: {
+      type: 'uint16',
       0: 'alternating_dumbbell_biceps_curl',
       1: 'alternating_dumbbell_biceps_curl_on_swiss_ball',
       2: 'alternating_incline_dumbbell_biceps_curl',
@@ -3252,8 +3379,8 @@ export const FIT = {
       42: 'twisting_standing_dumbbell_biceps_curl',
       43: 'wide_grip_ez_bar_biceps_curl',
     },
-
     deadlift_exercise_name: {
+      type: 'uint16',
       0: 'barbell_deadlift',
       1: 'barbell_straight_leg_deadlift',
       2: 'dumbbell_deadlift',
@@ -3275,6 +3402,7 @@ export const FIT = {
       18: 'wide_grip_barbell_deadlift',
     },
     flye_exercise_name: {
+      type: 'uint16',
       0: 'cable_crossover',
       1: 'decline_dumbbell_flye',
       2: 'dumbbell_flye',
@@ -3287,6 +3415,7 @@ export const FIT = {
       9: 'hug_a_tree',
     },
     hip_raise_exercise_name: {
+      type: 'uint16',
       0: 'barbell_hip_thrust_on_floor',
       1: 'barbell_hip_thrust_with_bench',
       2: 'bent_knee_swiss_ball_reverse_hip_raise',
@@ -3339,6 +3468,7 @@ export const FIT = {
       49: 'leg_lift_in_external_rotation',
     },
     hip_stability_exercise_name: {
+      type: 'uint16',
       0: 'band_side_lying_leg_raise',
       1: 'dead_bug',
       2: 'weighted_dead_bug',
@@ -3375,11 +3505,13 @@ export const FIT = {
       33: 'weighted_supine_hip_internal_rotation',
     },
     hip_swing_excercise_name: {
+      type: 'uint16',
       0: 'single_arm_kettlebell_swing',
       1: 'single_arm_dumbbell_swing',
       2: 'step_out_swing',
     },
     hyperextension_exercise_name: {
+      type: 'uint16',
       0: 'back_extension_with_opposite_arm_and_leg_reach',
       1: 'weighted_back_extension_with_opposite_arm_and_leg_reach',
       2: 'base_rotations',
@@ -3422,6 +3554,7 @@ export const FIT = {
       39: 'supine_floor_barre',
     },
     lateral_raise_exercise_name: {
+      type: 'uint16',
       0: '45_degree_cable_external_rotation',
       1: 'alternating_lateral_raise_with_static_hold',
       2: 'bar_muscle_up',
@@ -3458,6 +3591,7 @@ export const FIT = {
       33: 'shaving_the_head',
     },
     leg_curl_exercise_name: {
+      type: 'uint16',
       0: 'leg_curl',
       1: 'weighted_leg_curl',
       2: 'good_morning',
@@ -3472,6 +3606,7 @@ export const FIT = {
       11: 'zercher_good_morning',
     },
     leg_raise_exercise_name: {
+      type: 'uint16',
       0: 'hanging_knee_raise',
       1: 'hanging_leg_raise',
       2: 'weighted_hanging_leg_raise',
@@ -3496,6 +3631,7 @@ export const FIT = {
       21: 'weighted_lateral_stepover',
     },
     lunge_exercise_name: {
+      type: 'uint16',
       0: 'overhead_lunge',
       1: 'lunge_matrix',
       2: 'weighted_lunge_matrix',
@@ -3579,6 +3715,7 @@ export const FIT = {
       80: 'wide_grip_overhead_barbell_split_squat',
     },
     olympic_lift_exercise_name: {
+      type: 'uint16',
       0: 'barbell_hang_power_clean',
       1: 'barbell_hang_squat_clean',
       2: 'barbell_power_clean',
@@ -3602,6 +3739,7 @@ export const FIT = {
       20: 'squat_clean_and_jerk',
     },
     plank_exercise_name: {
+      type: 'uint16',
       0: '45_degree_plank',
       1: 'weighted_45_degree_plank',
       2: '90_degree_static_hold',
@@ -3739,6 +3877,7 @@ export const FIT = {
       134: 'reverse_plank_with_leg_pull',
     },
     plyo_exercise_name: {
+      type: 'uint16',
       0: 'alternating_jump_lunge',
       1: 'weighted_alternating_jump_lunge',
       2: 'barbell_jump_squat',
@@ -3774,6 +3913,7 @@ export const FIT = {
       32: 'weighted_squat_jumps_in_and_out',
     },
     pull_up_exercise_name: {
+      type: 'uint16',
       0: 'banded_pull_ups',
       1: '30_degree_lat_pulldown',
       2: 'band_assisted_chin_up',
@@ -3815,6 +3955,7 @@ export const FIT = {
       38: 'pull_up',
     },
     push_up_exercise_name: {
+      type: 'uint16',
       0: 'chest_press_with_band',
       1: 'alternating_staggered_push_up',
       2: 'weighted_alternating_staggered_push_up',
@@ -3896,6 +4037,7 @@ export const FIT = {
       78: 'pilates_pushup',
     },
     row_exercise_name: {
+      type: 'uint16',
       0: 'barbell_straight_leg_deadlift_to_row',
       1: 'cable_row_standing',
       2: 'dumbbell_row',
@@ -3932,6 +4074,7 @@ export const FIT = {
       33: 'wide_grip_seated_cable_row',
     },
     shoulder_press_exercise_name: {
+      type: 'uint16',
       0: 'alternating_dumbbell_shoulder_press',
       1: 'arnold_press',
       2: 'barbell_front_squat_to_push_press',
@@ -3958,6 +4101,7 @@ export const FIT = {
       23: 'weight_plate_front_raise',
     },
     shoulder_stability_exercise_name: {
+      type: 'uint16',
       0: '90_degree_cable_external_rotation',
       1: 'band_external_rotation',
       2: 'band_internal_rotation',
@@ -3993,6 +4137,7 @@ export const FIT = {
       32: 'weighted_swiss_ball_y_raise',
     },
     shrug_exercise_name: {
+      type: 'uint16',
       0: 'barbell_jump_shrug',
       1: 'barbell_shrug',
       2: 'barbell_upright_row',
@@ -4012,6 +4157,7 @@ export const FIT = {
       16: 'wide_grip_jump_shrug',
     },
     sit_up_exercise_name: {
+      type: 'uint16',
       0: 'alternating_sit_up',
       1: 'weighted_alternating_sit_up',
       2: 'bent_knee_v_up',
@@ -4052,6 +4198,7 @@ export const FIT = {
       37: 'sit_up',
     },
     squat_exercise_name: {
+      type: 'uint16',
       0: 'leg_press',
       1: 'back_squat_with_body_bar',
       2: 'back_squats',
@@ -4146,6 +4293,7 @@ export const FIT = {
       91: 'releve_straight_leg_and_knee_bent_with_one_leg_variation',
     },
     total_body_exercise_name: {
+      type: 'uint16',
       0: 'burpee',
       1: 'weighted_burpee',
       2: 'burpee_box_jump',
@@ -4161,6 +4309,7 @@ export const FIT = {
       12: 'weighted_standing_t_rotation_balance',
     },
     triceps_extension_exercise_name: {
+      type: 'uint16',
       0: 'bench_dip',
       1: 'weighted_bench_dip',
       2: 'body_weight_dip',
@@ -4204,6 +4353,7 @@ export const FIT = {
       40: 'weighted_dip',
     },
     warm_up_exercise_name: {
+      type: 'uint16',
       0: 'quadruped_rocking',
       1: 'neck_tilts',
       2: 'ankle_circles',
@@ -4237,34 +4387,41 @@ export const FIT = {
       30: 'walkout_from_push_up_position',
     },
     run_exercise_name: {
+      type: 'uint16',
       0: 'run',
       1: 'walk',
       2: 'jog',
       3: 'sprint',
     },
     water_type: {
+      type: 'enum',
       0: 'fresh',
       1: 'salt',
       2: 'en13319',
       3: 'custom',
     },
     tissue_model_type: {
+      type: 'enum',
       0: 'zhl_16c',
     },
     dive_gas_status: {
+      type: 'enum',
       0: 'disabled',
       1: 'enabled',
       2: 'backup_only',
     },
     dive_alarm_type: {
+      type: 'enum',
       0: 'depth',
       1: 'time',
     },
     dive_backlight_mode: {
+      type: 'enum',
       0: 'at_depth',
       1: 'always_on',
     },
     favero_product: {
+      type: 'uint16',
       10: 'assioma_uno',
       12: 'assioma_duo',
     }
@@ -4288,4 +4445,10 @@ export function getFieldObject(fieldNum, messageNum) {
   return fieldObj;
 }
 
-
+export function getMessage(name) {
+    for (const [defNum, entry] of Object.entries(messages)) {
+        if (x.name === name) {
+            return Object.assign({defNum}, entry);
+        }
+    }
+}
