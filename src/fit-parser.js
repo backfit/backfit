@@ -44,7 +44,7 @@ export default class FitParser {
         const instance = new this();
         let offt = headerLength;
         while (offt < crcStart) {
-            console.warn(`Reading record from: ${offt}`);
+            //console.warn(`Reading record from: ${offt}`);
             const rBuf = new Uint8Array(buf.buffer, buf.byteOffset + offt);
             const record = bin.readRecord(rBuf, messageTypes, devFields);
             if (record.messageType === 'data') {

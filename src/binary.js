@@ -36,62 +36,9 @@ function readTypedData(buf, fDef) {
         typedBuf[i] = view[`get${typeName}`](i * typedBuf.BYTES_PER_ELEMENT, isLittleEndian);
     }
     return typedBuf;
-
-    if (fDef.endianAbility) {
-        const dataView = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
-        switch (fDef.type) {
-            case 'sint16':
-                return dataView.getInt16(0, fDef.littleEndian);
-            case 'uint16':
-            case 'uint16z':
-                return dataView.getUint16(0, fDef.littleEndian);
-            case 'sint32':
-                return dataView.getInt32(0, fDef.littleEndian);
-            case 'uint32':
-            case 'uint32z':
-                return dataView.getUint32(0, fDef.littleEndian);
-            case 'float32':
-                return dataView.getFloat32(0, fDef.littleEndian);
-            case 'float64':
-                return dataView.getFloat64(0, fDef.littleEndian);
-            case 'uint32_array': {
-                const array32 = [];
-                for (let i = 0; i < fDef.size; i += 4) {
-                    array32.push(dataView.getUint32(i, fDef.littleEndian));
-                }
-                return array32;
-            }
-            case 'uint16_array': {
-                const array = [];
-                for (let i = 0; i < fDef.size; i += 2) {
-                    array.push(dataView.getUint16(i, fDef.littleEndian));
-                }
-                return array;
-            }
-        }
-        debugger;
-        // Who what now?
-        return addEndian(fDef.littleEndian, buf);
-    }
-    if (fDef.type === 'string') {
-        return array2str(buf);
-    }
-    if (fDef.type === 'byte_array') {
-        return buf;
-        //debugger;
-        //const temp = [];
-        //for (let i = 0; i < fDef.size; i++) {
-        //    temp.push(buf[startIndex + i]);
-        //}
-        //return temp;
-    }
-
-    // who what now? XXX
-    debugger;
-    return buf[0];  // XXX no, just no
 }
 
-function decodeTypedData(array, type, scale, offset) {
+function decodeTypedData(array, type, scale, offset, fields) {
     const isArray = type.endsWith('_array');
     const rootType = isArray ? type.split('_array')[0] : type;
     let customType;
@@ -109,15 +56,15 @@ function decodeTypedData(array, type, scale, offset) {
     function decode(x) {
         if (customType) {
             if (customType.decode) {
-                return customType.decode(x, array);
-            } else if (customType.mask || customType.type.endsWith('z')) {
+                return customType.decode(x, array, fields);
+            } else if (customType.mask) {
                 const result = {flags:[]};
                 for (const [key, label] of Object.entries(customType)) {
                     const flag = Number(key);
                     if (isNaN(flag)) {
                         continue;
                     }
-                    if (x & flag === flag) {
+                    if ((x & flag) === flag) {
                         result.flags.push(label);
                     }
                 }
@@ -126,10 +73,11 @@ function decodeTypedData(array, type, scale, offset) {
                 }
                 return result;
             } else {
-                if (!Object.prototype.hasOwnProperty.call(customType, x)) {
-                    throw new TypeError(`Unexpected custom type key: ${x} for ${type}`);
+                if (Object.prototype.hasOwnProperty.call(customType, x)) {
+                    return customType[x];
+                } else {
+                    return x;
                 }
-                return customType[x];
             }
         } else {
             switch (rootType) {
@@ -138,6 +86,10 @@ function decodeTypedData(array, type, scale, offset) {
                 case 'sint16':
                 case 'uint32':
                 case 'uint16':
+                case 'uint8z':
+                case 'uint16z':
+                case 'uint32z':
+                case 'uint64z':
                     return scale ? x / scale + offset : x;
                 case 'string':
                     return array2str(array);
@@ -226,7 +178,7 @@ function readDefinitionMessage(dataView, recordHeader, localMessageType, message
     }
     messageTypes[localMessageType] = mTypeDef;
     const size = 6 + (mTypeDef.fieldCount * 3) + (hasDevData ? 1 : 0);
-    console.warn(`Read def msg: ${fieldCount} fields, ${devFieldCount} dev fields, ${size} bytes`);
+    //console.warn(`Read def msg: ${fieldCount} fields, ${devFieldCount} dev fields, ${size} bytes`);
     return {
         messageType: 'definition',
         size,
@@ -253,10 +205,10 @@ function readDataMessage(dataView, recordHeader, localMessageType, messageTypes,
                 const type =  fDef.type;
                 const scale = fDef.scale;
                 const offset = fDef.offset;
-                fields[fDef.name] = decodeTypedData(typedDataArray, type, scale, offset);
+                fields[fDef.name] = decodeTypedData(typedDataArray, type, scale, offset, fields);
             } else {
                 const {field, type, scale, offset} = message.getAttributes(fDef.fDefNum);
-                fields[field] = decodeTypedData(typedDataArray, type, scale, offset);
+                fields[field] = decodeTypedData(typedDataArray, type, scale, offset, fields);
             }
         }
         offt += fDef.size;
@@ -266,7 +218,7 @@ function readDataMessage(dataView, recordHeader, localMessageType, messageTypes,
         devFields[fields.developer_data_index] = devFields[fields.developer_data_index] || [];
         devFields[fields.developer_data_index][fields.field_definition_number] = fields;
     }
-    console.warn(`Read data msg: ${message.name}, ${messageType.fieldDefs.length} fields, ${size} bytes`, fields);
+    //console.warn(`Read data msg: ${message.name}, ${messageType.fieldDefs.length} fields, ${size} bytes`, fields);
     return {
         messageType: 'data',
         size,

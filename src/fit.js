@@ -39,7 +39,7 @@ export const FIT = {
           name: 'file_id',
           0: { field: 'type', type: 'file', scale: null, offset: ''},
           1: { field: 'manufacturer', type: 'manufacturer', scale: null, offset: ''},
-          2: { field: 'product', type: 'uint16', scale: null, offset: ''},
+          2: { field: 'product', type: 'product', scale: null, offset: ''},
           3: { field: 'serial_number', type: 'uint32z', scale: null, offset: ''},
           4: { field: 'time_created', type: 'date_time', scale: null, offset: ''},
           5: { field: 'number', type: 'uint16', scale: null, offset: ''},
@@ -1931,6 +1931,19 @@ export const FIT = {
           295: 'virtugo',
           296: 'velosense',
           5759: 'actigraphcorp',
+        },
+        product: {
+          type: 'uint16',
+          decode: (value, array, fields) => {
+            const manu = fields.manufacturer;
+            if (manu === 'garmin' || manu === 'dynastream' || manu === 'dynastream_oem') {
+                return FIT.types.garmin_product[value] || value;
+            } else if (manu === 'favero_electronics') {
+                return FIT.types.favero_product[value] || value;
+            } else {
+                return value;
+            }
+          }
         },
         garmin_product: {
           type: 'uint16',
