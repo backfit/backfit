@@ -32,7 +32,7 @@ function readTypedData(buf, fDef) {
     const typeName = typedBuf.constructor.name.split('Array')[0];
     const isLittleEndian = fDef.endianAbility ? fDef.littleEndian : true; // XXX Not sure if we should default to true.
     for (let i = 0; i < typedBuf.length; i++) {
-        if (fDef.baseType.size > 1 && (!fDef.endianAbility || fDef.littleEndian)) { debugger; }
+        // if (fDef.baseType.size > 1 && (!fDef.endianAbility || fDef.littleEndian)) { debugger; }
         typedBuf[i] = view[`get${typeName}`](i * typedBuf.BYTES_PER_ELEMENT, isLittleEndian);
     }
     return typedBuf;

@@ -25,17 +25,21 @@ export default class FitParser {
         if (fileTypeString !== '.FIT') {
             throw new TypeError('Missing \'.FIT\' in header');
         }
+        let hasCrcHeader;
         if (headerLength === 14) {
             const crcHeader = dataView.getUint16(12, /*LE*/ true);
-            const crcHeaderCalc = bin.calculateCRC(buf, 0, 12);
-            if (crcHeader !== crcHeaderCalc) {
-                throw new Error('Header CRC mismatch');
+            if (crcHeader) {
+                hasCrcHeader = true;
+                const crcHeaderCalc = bin.calculateCRC(buf, 0, 12);
+                if (crcHeader !== crcHeaderCalc) {
+                    throw new Error('Header CRC mismatch');
+                }
             }
         }
         const dataLength = dataView.getUint32(4, /*LE*/ true);
         const crcStart = dataLength + headerLength;
         const crcFile = dataView.getUint16(crcStart, /*LE*/ true);
-        const crcFileCalc = bin.calculateCRC(buf, headerLength === 12 ? 0 : headerLength, crcStart);
+        const crcFileCalc = bin.calculateCRC(buf, hasCrcHeader ? headerLength : 0, crcStart);
         if (crcFile !== crcFileCalc) {
             throw new Error('File CRC mismatch');
         }
