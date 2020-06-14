@@ -10,7 +10,7 @@
         "SharedArrayBuffer": "readonly"
     },
     "parserOptions": {
-        "ecmaVersion": 2018,
+        "ecmaVersion": 2020,
         "sourceType": "module"
     },
     "rules": {
@@ -21,6 +21,13 @@
         "semi": [
             "error",
             "always"
+        ],
+        "no-debugger": "off",
+        "no-unused-vars": [
+            "error",
+            {
+                "args": "none"
+            }
         ]
     }
 }

@@ -5,16 +5,9 @@
             async function onChangeFile(ev) {
                 const file = ev.currentTarget.files[0];
                 const buf = new Uint8Array(await file.arrayBuffer());
-                const fitParser = new backfit.FitParser({
-                    speedUnit: 'km/h',
-                    lengthUnit: 'm',
-                    temperatureUnit: 'celsius',
-                    elapsedRecordField: true,
-                    mode: 'list',
-                });
+                const fitParser = backfit.FitParser.decode(buf);
                 const preEl = document.querySelector('#output');
-                const data = fitParser.decode(buf);
-                preEl.innerText = JSON.stringify(data, null, 4);
+                preEl.innerText = JSON.stringify(fitParser.records, null, 4);
             }
 
             function onMakeSegmentFile() {
