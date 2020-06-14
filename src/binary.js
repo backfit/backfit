@@ -91,7 +91,7 @@ function readTypedData(buf, fDef) {
     return buf[0];  // XXX no, just no
 }
 
-function convertTypedData(array, type, scale, offset) {
+function decodeTypedData(array, type, scale, offset) {
     const isArray = type.endsWith('_array');
     const rootType = isArray ? type.split('_array')[0] : type;
     let customType;
@@ -106,10 +106,10 @@ function convertTypedData(array, type, scale, offset) {
             throw new TypeError(`Unsupported type: ${type}`);
         }
     }
-    function convert(x) {
+    function decode(x) {
         if (customType) {
-            if (customType.convert) {
-                return customType.convert();
+            if (customType.decode) {
+                return customType.decode(x, array);
             } else if (customType.mask || customType.type.endsWith('z')) {
                 const result = {flags:[]};
                 for (const [key, label] of Object.entries(customType)) {
@@ -148,7 +148,7 @@ function convertTypedData(array, type, scale, offset) {
             }
         }
     }
-    return isArray ? array.map(convert) : convert(array[0]);
+    return isArray ? array.map(decode) : decode(array[0]);
 }
 
 function isInvalidValue(data, type) {
@@ -253,10 +253,10 @@ function readDataMessage(dataView, recordHeader, localMessageType, messageTypes,
                 const type =  fDef.type;
                 const scale = fDef.scale;
                 const offset = fDef.offset;
-                fields[fDef.name] = convertTypedData(typedDataArray, type, scale, offset);
+                fields[fDef.name] = decodeTypedData(typedDataArray, type, scale, offset);
             } else {
                 const {field, type, scale, offset} = message.getAttributes(fDef.fDefNum);
-                fields[field] = convertTypedData(typedDataArray, type, scale, offset);
+                fields[field] = decodeTypedData(typedDataArray, type, scale, offset);
             }
         }
         offt += fDef.size;
