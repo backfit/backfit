@@ -40,14 +40,14 @@ function writeTypedData(data, fDef) {
     const typeName = fDef.baseType.TypedArray.name.split('Array')[0];
     const view = new DataView(new ArrayBuffer(fDef.size));
     const isLittleEndian = fDef.endianAbility ? fDef.littleEndian : true; // XXX Not sure if we should default to true.
-    const type = fDef.attrs.type;
-    const isArray = type.endsWith('_array');
-    if (isArray) {
+    if (typeof data === 'bigint' || typeof data === 'number') {
+        view[`set${typeName}`](0, data, isLittleEndian);
+    } else if (ArrayBuffer.isView(data.length) && !(data instanceof DataView)) {
         for (let i = 0; i < data.length; i++) {
             view[`set${typeName}`](i * fDef.baseType.size, data[i], isLittleEndian);
         }
     } else {
-        view[`set${typeName}`](0, data, isLittleEndian);
+        throw new TypeError(`Unsupported data type: ${data}`);
     }
     return new Uint8Array(view.buffer, view.byteOffset, view.byteLength);
 }
@@ -104,7 +104,8 @@ function encodeTypedData(data, fDef, fields) {
                 case 'uint64z':
                     return fDef.attrs.scale ? (x - fDef.attrs.offset) * fDef.attrs.scale : x;
                 case 'string':
-                    return data.split('').map(x => x.charCodeAt(0));
+                    debugger;
+                    return Uint8Array.from(data.split('').map(x => x.charCodeAt(0)));
                 default:
                     throw new TypeError(`Unhandled root type: ${rootType}`);
             }
