@@ -2,9 +2,10 @@
 
 import * as bin from './binary.js';
 
+
 export default class FitParser {
     constructor() {
-        this.records = [];
+        this.messages = [];
     }
 
     static decode(content) {
@@ -37,31 +38,30 @@ export default class FitParser {
             }
         }
         const dataLength = dataView.getUint32(4, /*LE*/ true);
-        const crcStart = dataLength + headerLength;
-        const crcFile = dataView.getUint16(crcStart, /*LE*/ true);
-        const crcFileCalc = bin.calculateCRC(buf, hasCrcHeader ? headerLength : 0, crcStart);
+        const dataEnd = dataLength + headerLength;
+        const crcFile = dataView.getUint16(dataEnd, /*LE*/ true);
+        const crcFileCalc = bin.calculateCRC(buf, hasCrcHeader ? headerLength : 0, dataEnd);
         if (crcFile !== crcFileCalc) {
             throw new Error('File CRC mismatch');
         }
-        const messageTypes = [];
-        const devFields = [];
         const instance = new this();
+        instance._definitions = {};
+        instance._devFields = {};
         let offt = headerLength;
-        while (offt < crcStart) {
-            //console.warn(`Reading record from: ${offt}`);
+        while (offt < dataEnd) {
             const rBuf = new Uint8Array(buf.buffer, buf.byteOffset + offt);
-            const record = bin.readRecord(rBuf, messageTypes, devFields);
-            if (record.messageType === 'data') {
-                instance.addRecord(record.name, record.fields);
+            const msg = bin.readMessage(rBuf, instance._definitions, instance._devFields);
+            if (msg.type === 'data') {
+                instance.messages.push(msg);
             }
-            offt += record.size;
+            offt += msg.size;
         }
         return instance;
     }
 
     encode() {
-        const headerBuf = new Uint8Array(14);  // 12 or 14, but 12 is legacy
-        headerBuf[0] = 14;  // header size (always 14)
+        const headerBuf = new Uint8Array(14);
+        headerBuf[0] = 14;  // header size;
         const version_major = 1;
         const version_minor = 0;
         headerBuf[1] = version_major << 4 | version_minor;
@@ -69,39 +69,16 @@ export default class FitParser {
         const profile_version_minor = 96;
         const profile_version = profile_version_major * 100 + profile_version_minor;
         headerBuf.set(bin.uint16leBytes(profile_version), 2);
-        // uint32 LE size minus header and crc
         headerBuf.set('.FIT'.split('').map(x => x.charCodeAt(0)), 8);
-        // uint16 LE crc of header
-
-        const msgDef = new MessageDefinition({
-            id: 0,
-            fields: {
-                type: {defNum: 0,  size: 1, baseType: 'uint8'},
-                manufacturer: {defNum: 1,  size: 2, baseType: 'uint16'},
-                product: {defNum: 2,  size: 2, baseType: 'uint16'},
-                serial: {defNum: 3,  size: 4, baseType: 'uint32z'},
-                time_created: {defNum: 4,  size: 4, baseType: 'uint32'},
-                number: {defNum: 5,  size: 2, baseType: 'uint16'},
-                product_name: {defNum: 8,  size: 20, baseType: 'string'},
-            }
-        });
-        const msgDefBuf = msgDef.encode();
-
-        headerBuf.set(bin.uint32leBytes(msgDefBuf.byteLength), 4);
+        const dataBuf = bin.joinBuffers(this.messages.map((x, i) =>
+            bin.writeMessageTuple(x, i, this._definitions, this._devFields)));
+        headerBuf.set(bin.uint32leBytes(dataBuf.byteLength), 4);
         const headerCrc = bin.calculateCRC(headerBuf, 0, 12);
         headerBuf.set(bin.uint16leBytes(headerCrc), 12);
-        const xxx = new Uint8Array(4096);
         const crcBuf = new Uint8Array(2);
-        const crc = bin.calculateCRC(msgDefBuf);
+        const crc = bin.calculateCRC(dataBuf);
         crcBuf.set(bin.uint16leBytes(crc));
-        xxx.set(headerBuf, 0);
-        xxx.set(msgDefBuf, headerBuf.byteLength);
-        xxx.set(crcBuf, headerBuf.byteLength + msgDefBuf.byteLength);
-        return xxx.slice(0, headerBuf.byteLength + msgDefBuf.byteLength + crcBuf.byteLength);
-    }
-
-    addRecord(name, fields) {
-        this.records.push({name, fields});
+        return bin.joinBuffers([headerBuf, dataBuf, crcBuf]);
     }
 }
 

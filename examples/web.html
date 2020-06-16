@@ -7,14 +7,21 @@
                 const buf = new Uint8Array(await file.arrayBuffer());
                 const fitParser = backfit.FitParser.decode(buf);
                 const preEl = document.querySelector('#output');
-                preEl.innerText = JSON.stringify(fitParser.records, null, 4);
+                //preEl.innerText = JSON.stringify(fitParser.messages.map(x => x.fields), null, 4);
+                const newBuf = fitParser.encode();
+                preEl.innerText = `old: ${buf.length}, new: ${newBuf.length}`;
+                download('hello.fit', newBuf);
             }
 
             function onMakeSegmentFile() {
                 const fitParser = new backfit.FitParser({});
                 const buf = fitParser.encode();
+                download('hello.fit', buf);
+            }
+
+            function download(name, buf) {
                 const link = document.createElement('a');
-                link.download = 'hello.fit';
+                link.download = name;
                 link.href = URL.createObjectURL(new Blob([buf]));
                 try {
                     link.click();
@@ -22,6 +29,7 @@
                     URL.revokeObjectURL(link.href);
                 }
             }
+
 
             addEventListener('DOMContentLoaded', () => {
                 document.querySelector('#fit-file').addEventListener('change', onChangeFile);
