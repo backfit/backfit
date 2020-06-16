@@ -12,18 +12,6 @@ export function addEndian(littleEndian, bytes) {
 }
 
 
-function array2str(arr) {
-    const out = [];
-    for (const x of arr) {
-        if (!x) {
-            break;  // null terminated
-        }
-        out.push(String.fromCharCode(x));
-    }
-    return out.join('');
-}
-
-
 function readTypedData(buf, fDef) {
     const typedBuf = new fDef.baseType.TypedArray(fDef.size / fDef.baseType.size);
     const view = new DataView(buf.buffer, buf.byteOffset, fDef.size);
@@ -42,7 +30,7 @@ function writeTypedData(data, fDef) {
     const isLittleEndian = fDef.endianAbility ? fDef.littleEndian : true; // XXX Not sure if we should default to true.
     if (typeof data === 'bigint' || typeof data === 'number') {
         view[`set${typeName}`](0, data, isLittleEndian);
-    } else if (ArrayBuffer.isView(data.length) && !(data instanceof DataView)) {
+    } else if (ArrayBuffer.isView(data) && !(data instanceof DataView)) {
         for (let i = 0; i < data.length; i++) {
             view[`set${typeName}`](i * fDef.baseType.size, data[i], isLittleEndian);
         }
@@ -71,7 +59,9 @@ function encodeTypedData(data, fDef, fields) {
     }
     function encode(x) {
         if (customType) {
-            if (customType.encode) {
+            if (customType.decode && !customType.encode) {
+                throw new TypeError(`Type encode/decode parity mismatch: ${type}`);
+            } else if (customType.encode) {
                 return customType.encode(x, data, fields);
             } else if (customType.mask) {
                 let value = x.value;
@@ -83,6 +73,7 @@ function encodeTypedData(data, fDef, fields) {
                 if (Object.prototype.hasOwnProperty.call(customType.values, x)) {
                     return customType.values[x];
                 } else {
+                    debugger;
                     return x;
                 }
             }
@@ -104,8 +95,14 @@ function encodeTypedData(data, fDef, fields) {
                 case 'uint64z':
                     return fDef.attrs.scale ? (x - fDef.attrs.offset) * fDef.attrs.scale : x;
                 case 'string':
-                    debugger;
-                    return Uint8Array.from(data.split('').map(x => x.charCodeAt(0)));
+                    const te = new TextEncoder();
+                    const bytes = te.encode(data);
+                    if (bytes.byteLength >= fDef.size) {
+                        console.warn("Truncating oversized string");
+                        return bytes.slice(0, fDef.size - 1); // Leave room for null padding to be safe.
+                    } else {
+                        return bytes;
+                    }
                 default:
                     throw new TypeError(`Unhandled root type: ${rootType}`);
             }
@@ -174,7 +171,13 @@ function decodeTypedData(data, fDef, fields) {
                 case 'uint64z':
                     return fDef.attrs.scale ? x / fDef.attrs.scale + fDef.attrs.offset : x;
                 case 'string':
-                    return array2str(data);
+                    const td = new TextDecoder();
+                    const nullIndex = data.indexOf(0);
+                    if (nullIndex !== -1) {
+                        return td.decode(data.slice(0, nullIndex));
+                    } else {
+                        return td.decode(data);
+                    }
                 default:
                     throw new TypeError(`Unhandled root type: ${rootType}`);
             }
@@ -183,12 +186,12 @@ function decodeTypedData(data, fDef, fields) {
     return isArray ? data.map(decode) : decode(data[0]);
 }
 
-function isInvalidValue(data, type) {
+function getInvalidValue(type) {
     const bt = fit.getBaseType(getBaseTypeId(type));
     if (bt === undefined) {
         throw new TypeError(`Invalid type: ${type}`);
     }
-    return bt.invalid === data;
+    return bt.invalid;
 }
 
 export function writeMessageTuple(msg, localMessageType, definitions, devFields) {
@@ -200,7 +203,6 @@ export function writeMessageTuple(msg, localMessageType, definitions, devFields)
     defView.setUint8(2, littleEndian ? 0 : 1);
     defView.setUint16(3, msg.mDef.globalMessageNumber, littleEndian);
     defView.setUint8(5, msg.mDef.fieldDefs.length);
-    debugger;
     let offt = 6;
     for (const fDef of msg.mDef.fieldDefs) {
         if (fDef.isDevField) {
@@ -217,10 +219,9 @@ export function writeMessageTuple(msg, localMessageType, definitions, devFields)
     for (const fDef of msg.mDef.fieldDefs) {
         const value = msg.fields[fDef.attrs.field];
         if (value == null) {
-            throw new Error("Handle writting the invalid byte(s)"); // XXX
-            //if (!isInvalidValue(typedDataArray[0], fDef.baseType.name)) {
-            //    fields[fDef.attrs.field] = decodeTypedData(typedDataArray, fDef, fields);
-            //}
+            const typedBuf = new fDef.baseType.TypedArray(fDef.size / fDef.baseType.size);
+            typedBuf[0] = getInvalidValue(fDef.baseType.name);
+            buffers.push(typedBuf);
         } else {
             const encodedData = encodeTypedData(value, fDef, msg.fields);
             buffers.push(writeTypedData(encodedData, fDef));
@@ -342,7 +343,7 @@ function readDataMessage(dataView, recordHeader, localMessageType, definitions, 
         const fDef = mDef.fieldDefs[i];
         const fBuf = new Uint8Array(dataView.buffer, dataView.byteOffset + offt, fDef.size);
         const typedDataArray = readTypedData(fBuf, fDef);
-        if (!isInvalidValue(typedDataArray[0], fDef.baseType.name)) {
+        if (getInvalidValue(fDef.baseType.name) !== typedDataArray[0]) {
             fields[fDef.attrs.field] = decodeTypedData(typedDataArray, fDef, fields);
         }
         offt += fDef.size;

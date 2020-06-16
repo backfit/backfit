@@ -2,12 +2,22 @@
 /* global BigUint64Array, BigInt64Array */
 
 
+const _dtOfft = 7304 * 86400 * 1000;  // 7304 days between 1970 and 1990
+
 function dateTimeDecode(x) {
     if (x < 0x10000000) {
         return x;  // Just return seconds-since-power-on value as a number
     } else {
-        const offset = 7304 * 86400 * 1000;  // 7304 days for reasons unknown.
-        return new Date(x * 1000 + offset);
+        return new Date(x * 1000 + _dtOfft);
+    }
+}
+
+function dateTimeEncode(x) {
+    if (typeof x === 'number') {
+        return x;  // seconds-since-power-on value is already a number
+    } else {
+        const ts = x.getTime();
+        return (ts - _dtOfft) / 1000;
     }
 }
 
@@ -998,11 +1008,13 @@ export const types = {
     },
     date_time: {
       type: 'uint32',
-      decode: dateTimeDecode
+      decode: dateTimeDecode,
+      encode: dateTimeEncode
     },
     local_date_time: {
       type: 'uint32',
-      decode: dateTimeDecode
+      decode: dateTimeDecode,
+      encode: dateTimeEncode
     },
     message_index: {
       type: 'uint16',
@@ -1945,12 +1957,22 @@ export const types = {
     },
     product: {
       type: 'uint16',
-      decode: (value, array, fields) => {
+      decode: (value, raw, fields) => {
         const manu = fields.manufacturer;
         if (manu === 'garmin' || manu === 'dynastream' || manu === 'dynastream_oem') {
             return types.garmin_product[value] || value;
         } else if (manu === 'favero_electronics') {
             return types.favero_product[value] || value;
+        } else {
+            return value;
+        }
+      },
+      encode: (value, raw, fields) => {
+        const manu = fields.manufacturer;
+        if (manu === 'garmin' || manu === 'dynastream' || manu === 'dynastream_oem') {
+            return typesIndex.garmin_product[value] || value;
+        } else if (manu === 'favero_electronics') {
+            return typesIndex.favero_product[value] || value;
         } else {
             return value;
         }
@@ -4428,7 +4450,8 @@ export const types = {
     },
     semicircles: {
       type: 'sint32',
-      decode: x => x * (180 / 0x80000000)
+      decode: x => x * (180 / 0x80000000),
+      encode: x => x / (180 / 0x80000000)
     }
 };
 
