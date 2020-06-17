@@ -767,8 +767,8 @@ export const messages = {
     150: {
       name: 'segment_point',
       254: { field: 'message_index', type: 'message_index', scale: null, offset: ''},
-      1: { field: 'start_position_lat', type: 'semicircles', scale: null, offset: 0},
-      2: { field: 'start_position_long', type: 'semicircles', scale: null, offset: 0},
+      1: { field: 'position_lat', type: 'semicircles'},
+      2: { field: 'position_long', type: 'semicircles'},
       3: { field: 'distance', type: 'uint32', scale: 100, offset: 0},
       4: { field: 'altitude', type: 'uint16', scale: 5, offset: -500},
       5: { field: 'leader_time', type: 'uint32_array', scale: 1000, offset: 0},
