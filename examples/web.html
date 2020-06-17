@@ -5,7 +5,7 @@
             async function onChangeFile(ev) {
                 const file = ev.currentTarget.files[0];
                 const buf = new Uint8Array(await file.arrayBuffer());
-                const fitParser = backfit.FitParser.decode(buf);
+                const fitParser = jsfit.FitParser.decode(buf);
                 const preEl = document.querySelector('#output');
                 //preEl.innerText = JSON.stringify(fitParser.messages.map(x => x.fields), null, 4);
                 const newBuf = fitParser.encode();
@@ -14,7 +14,7 @@
             }
 
             function onMakeSegmentFile() {
-                const fitParser = new backfit.FitParser();
+                const fitParser = new jsfit.FitParser();
                 fitParser.addMessage('file_id', {
                     manufacturer: 'strava',
                     type: 'segment',
