@@ -14,7 +14,12 @@
             }
 
             function onMakeSegmentFile() {
-                const fitParser = new backfit.FitParser({});
+                const fitParser = new backfit.FitParser();
+                fitParser.addMessage('file_id', {
+                    manufacturer: 'strava',
+                    type: 'segment',
+                    time_created: new Date()
+                });
                 const buf = fitParser.encode();
                 download('hello.fit', buf);
             }

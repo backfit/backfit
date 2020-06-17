@@ -4474,3 +4474,12 @@ export function getBaseType(baseType) {
     }
     return t;
 }
+
+export function getBaseTypeByName(name) {
+    for (const x of baseTypes) {
+        if (x.name === name) {
+            return x;
+        }
+    }
+    throw new TypeError(`Invalid base type: ${baseType}`);
+}

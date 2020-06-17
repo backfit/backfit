@@ -1,6 +1,7 @@
 // vim: ts=4:sw=4:expandtab
 
 import * as bin from './binary.js';
+import * as fit from './fit.js';
 
 
 export default class FitParser {
@@ -80,68 +81,40 @@ export default class FitParser {
         crcBuf.set(bin.uint16leBytes(crc));
         return bin.joinBuffers([headerBuf, dataBuf, crcBuf]);
     }
-}
 
-
-class MessageDefinition {
-    constructor(options) {
-        this.id = options.id;
-        this.fields = options.fields;
-    }
-
-    encode() {
-        const buf = new Uint8Array(4096); // precompute size requirements
-        const definitionFlag = 0x40;
-        buf[0] = this.id | definitionFlag;
-        buf[1] = 0;  // reserved;
-        buf[2] = 0;  // little endian (1 for big)
-        buf[3] = this.id;
-        buf[4] = this.fields.length;
-        let offt = 5;
-        for (const field of Object.values(this.fields)) {
-            buf.set([field.defNum, field.size, bin.baseTypeValue(field.baseType)], offt);
-            offt += 3;
-            if (offt > buf.size) {
-                throw new TypeError("mesg def overflow");
+    addMessage(globalMessage, fields) {
+        const message = fit.messagesIndex[globalMessage];
+        const littleEndian = true;
+        const mDef = {
+            littleEndian,
+            globalMessageNumber: message.id,
+            fieldCount: Object.keys(fields).length,
+            fieldDefs: [],
+        };
+        for (const [key, value] of Object.entries(fields)) {
+            const attrs = message.fields[key];
+            if (!attrs) {
+                throw new TypeError(`Invalid field: ${globalMessage}[${key}]`);
             }
+            const baseTypeName = fit.typesIndex[attrs.type] ? fit.typesIndex[attrs.type].type : attrs.type;
+            const baseType = fit.getBaseTypeByName(baseTypeName);
+            const baseTypeId = fit.typesIndex.fit_base_type.values[baseTypeName];
+            const endianFlag = 0x80;
+            mDef.fieldDefs.push({
+                attrs,
+                fDefNum: attrs.defNum,
+                size: NaN,  // Must be set via encoder.
+                endianAbility: (baseTypeId & endianFlag) === endianFlag,
+                littleEndian,
+                baseTypeId,
+                baseType,
+            });
         }
-        return buf.slice(0, offt);
-    }
-
-    encodeValues(dict) {
-        const buf = new Uint8Array(4096); // precompute size requirements
-        let offt = 0;
-        for (const [key, field] of Object.entries(this.fields)) {
-            const invalid = bin.invalids[field.baseType];
-            if (invalid === undefined) {
-                throw new TypeError(`Invalid baseType: ${field.baseType}`);
-            }
-            const valArr = new invalid.type([invalid.value]);
-            for (let i = 0; i < field.size; i += valArr.BYTES_PER_ELEMENT) {
-                buf.set(valArr, offt + i);
-            }
-            if (Object.prototype.hasOwnProperty.call(dict, key)) {
-                const value = dict[key];
-                if (field.baseType === 'string') {
-                    if (value) {
-                        if (value.length >= field.size) {
-                            throw new Error(`String value too large for field: ${field.size}`);
-                        }
-                        buf.set(value.split('').map(x => x.charCodeAt(0)), offt);
-                    }
-                } else if (field.baseType === 'string') {
-                    // XXX
-                }
-            }
-            offt += field.size;
-        }
-        for (const field of Object.values(this.fields)) {
-            buf.set([field.defNum, field.size, bin.baseTypeValue(field.baseType)], offt);
-            offt += 3;
-            if (offt > buf.size) {
-                throw new TypeError("mesg def overflow");
-            }
-        }
-        return buf.slice(0, offt);
+        this.messages.push({
+            type: 'data',
+            size: NaN,
+            mDef,
+            fields,
+        });
     }
 }

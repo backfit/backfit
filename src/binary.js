@@ -26,14 +26,19 @@ function readTypedData(buf, fDef) {
 
 function writeTypedData(data, fDef) {
     const typeName = fDef.baseType.TypedArray.name.split('Array')[0];
-    const view = new DataView(new ArrayBuffer(fDef.size));
+    const typeSize = fDef.baseType.TypedArray.BYTES_PER_ELEMENT;
     const isLittleEndian = fDef.endianAbility ? fDef.littleEndian : true; // XXX Not sure if we should default to true.
+    let view;
     if (typeof data === 'bigint' || typeof data === 'number') {
+        view = new DataView(new ArrayBuffer(typeSize));
         view[`set${typeName}`](0, data, isLittleEndian);
-    } else if (ArrayBuffer.isView(data) && !(data instanceof DataView)) {
+    } else if (data instanceof Array) {
+        view = new DataView(new ArrayBuffer(typeSize * data.length));
         for (let i = 0; i < data.length; i++) {
             view[`set${typeName}`](i * fDef.baseType.size, data[i], isLittleEndian);
         }
+    } else if (data instanceof fDef.baseType.TypedArray) {
+        return data;  // No copy/conversion needed.
     } else {
         throw new TypeError(`Unsupported data type: ${data}`);
     }
@@ -73,7 +78,6 @@ function encodeTypedData(data, fDef, fields) {
                 if (Object.prototype.hasOwnProperty.call(customType.values, x)) {
                     return customType.values[x];
                 } else {
-                    debugger;
                     return x;
                 }
             }
@@ -97,12 +101,7 @@ function encodeTypedData(data, fDef, fields) {
                 case 'string':
                     const te = new TextEncoder();
                     const bytes = te.encode(data);
-                    if (bytes.byteLength >= fDef.size) {
-                        console.warn("Truncating oversized string");
-                        return bytes.slice(0, fDef.size - 1); // Leave room for null padding to be safe.
-                    } else {
-                        return bytes;
-                    }
+                    return joinBuffers([bytes, Uint8Array.from([0])]);
                 default:
                     throw new TypeError(`Unhandled root type: ${rootType}`);
             }
@@ -183,7 +182,7 @@ function decodeTypedData(data, fDef, fields) {
             }
         }
     }
-    return isArray ? data.map(decode) : decode(data[0]);
+    return isArray ? Array.from(data).map(decode) : decode(data[0]);
 }
 
 function getInvalidValue(type) {
@@ -196,7 +195,25 @@ function getInvalidValue(type) {
 
 export function writeMessageTuple(msg, localMessageType, definitions, devFields) {
     const buffers = [];
-    const defView = new DataView(new ArrayBuffer(4096)); // XXX Do better size calcs first.
+    const dataHeader = new Uint8Array(1);
+    dataHeader[0] = localMessageType & 0xf;
+    buffers.push(dataHeader);
+    for (const fDef of msg.mDef.fieldDefs) {
+        const value = msg.fields[fDef.attrs.field];
+        if (value == null) {
+            const typedBuf = new fDef.baseType.TypedArray(1);
+            typedBuf[0] = getInvalidValue(fDef.baseType.name);
+            fDef.size = typedBuf.byteLength;
+            buffers.push(typedBuf);
+        } else {
+            const encodedData = encodeTypedData(value, fDef, msg.fields);
+            const buf = writeTypedData(encodedData, fDef);
+            fDef.size = buf.byteLength;
+            buffers.push(buf);
+        }
+    }
+    const defBuf = new Uint8Array(6 + (msg.mDef.fieldDefs.length * 3)); // XXX does not support devfields
+    const defView = new DataView(defBuf.buffer, defBuf.byteOffset, defBuf.byteLength);
     const definitionFlag = 0x40;
     defView.setUint8(0, (localMessageType & 0xf) | definitionFlag);
     const littleEndian = msg.mDef.littleEndian;
@@ -212,21 +229,7 @@ export function writeMessageTuple(msg, localMessageType, definitions, devFields)
         defView.setUint8(offt++, fDef.size);
         defView.setUint8(offt++, fDef.baseTypeId);
     }
-    buffers.push(new Uint8Array(defView.buffer, 0, offt));
-    const dataHeader = new Uint8Array(1);
-    dataHeader[0] = localMessageType & 0xf;
-    buffers.push(dataHeader);
-    for (const fDef of msg.mDef.fieldDefs) {
-        const value = msg.fields[fDef.attrs.field];
-        if (value == null) {
-            const typedBuf = new fDef.baseType.TypedArray(fDef.size / fDef.baseType.size);
-            typedBuf[0] = getInvalidValue(fDef.baseType.name);
-            buffers.push(typedBuf);
-        } else {
-            const encodedData = encodeTypedData(value, fDef, msg.fields);
-            buffers.push(writeTypedData(encodedData, fDef));
-        }
-    }
+    buffers.unshift(defBuf);
     return joinBuffers(buffers);
 }
 
@@ -260,13 +263,13 @@ function readDefinitionMessage(dataView, recordHeader, localMessageType, definit
     const endianFlag = 0x80;
     const fieldCount = dataView.getUint8(5);
     const devFieldCount = hasDevData ?  dataView.getUint8(5 + (fieldCount * 3) + 1) : 0;
-    const mTypeDef = {
+    const mDef = {
         littleEndian,
         globalMessageNumber: dataView.getUint16(3, littleEndian),
         fieldCount: fieldCount + devFieldCount,
         fieldDefs: [],
     };
-    const message = fit.messages[mTypeDef.globalMessageNumber];
+    const message = fit.messages[mDef.globalMessageNumber];
     for (let i = 0; i < fieldCount; i++) {
         const fDefIndex = 6 + (i * 3);
         const fDefNum = dataView.getUint8(fDefIndex);
@@ -280,7 +283,7 @@ function readDefinitionMessage(dataView, recordHeader, localMessageType, definit
             };
             console.warn(`Undocumented field: (${baseType.name}) ${message && message.name}[${fDefNum}]`); 
         }
-        mTypeDef.fieldDefs.push({
+        mDef.fieldDefs.push({
             attrs,
             fDefNum,
             size: dataView.getUint8(fDefIndex + 1),
@@ -297,7 +300,7 @@ function readDefinitionMessage(dataView, recordHeader, localMessageType, definit
         const devDataIndex = dataView.getUint8(fDefIndex + 2);
         const devDef = devFields[devDataIndex][fDefNum];
         const baseTypeId = devDef.fit_base_type_id;
-        mTypeDef.fieldDefs.push({
+        mDef.fieldDefs.push({
             attrs: {
                 field: devDef.field_name,
                 scale: devDef.scale,
@@ -314,13 +317,11 @@ function readDefinitionMessage(dataView, recordHeader, localMessageType, definit
             isDevField: true,
         });
     }
-    definitions[localMessageType] = mTypeDef;
-    const size = 6 + (mTypeDef.fieldCount * 3) + (hasDevData ? 1 : 0);
-    //console.warn(`Read def msg: ${fieldCount} fields, ${devFieldCount} dev fields, ${size} bytes`);
+    definitions[localMessageType] = mDef;
+    const size = 6 + (mDef.fieldCount * 3) + (hasDevData ? 1 : 0);
     return {
         type: 'definition',
-        message: mTypeDef,
-        localMessageType,
+        mDef,
         size,
     };
 }
@@ -356,9 +357,7 @@ function readDataMessage(dataView, recordHeader, localMessageType, definitions, 
     return {
         type: 'data',
         size,
-        message,
         mDef,
-        localMessageType,
         fields,
     };
 }
