@@ -4481,5 +4481,5 @@ export function getBaseTypeByName(name) {
             return x;
         }
     }
-    throw new TypeError(`Invalid base type: ${baseType}`);
+    throw new TypeError(`Invalid base type: ${name}`);
 }

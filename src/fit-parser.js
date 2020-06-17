@@ -91,7 +91,7 @@ export default class FitParser {
             fieldCount: Object.keys(fields).length,
             fieldDefs: [],
         };
-        for (const [key, value] of Object.entries(fields)) {
+        for (const key of Object.keys(fields)) {
             const attrs = message.fields[key];
             if (!attrs) {
                 throw new TypeError(`Invalid field: ${globalMessage}[${key}]`);

@@ -98,10 +98,11 @@ function encodeTypedData(data, fDef, fields) {
                 case 'uint32z':
                 case 'uint64z':
                     return fDef.attrs.scale ? (x - fDef.attrs.offset) * fDef.attrs.scale : x;
-                case 'string':
+                case 'string': {
                     const te = new TextEncoder();
                     const bytes = te.encode(data);
                     return joinBuffers([bytes, Uint8Array.from([0])]);
+                }
                 default:
                     throw new TypeError(`Unhandled root type: ${rootType}`);
             }
@@ -169,7 +170,7 @@ function decodeTypedData(data, fDef, fields) {
                 case 'uint32z':
                 case 'uint64z':
                     return fDef.attrs.scale ? x / fDef.attrs.scale + fDef.attrs.offset : x;
-                case 'string':
+                case 'string': {
                     const td = new TextDecoder();
                     const nullIndex = data.indexOf(0);
                     if (nullIndex !== -1) {
@@ -177,6 +178,7 @@ function decodeTypedData(data, fDef, fields) {
                     } else {
                         return td.decode(data);
                     }
+                }
                 default:
                     throw new TypeError(`Unhandled root type: ${rootType}`);
             }
