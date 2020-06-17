@@ -7,6 +7,7 @@ import * as fit from './fit.js';
 export default class FitParser {
     constructor() {
         this.messages = [];
+        this._devFields = {};
     }
 
     static decode(content) {
@@ -46,12 +47,11 @@ export default class FitParser {
             throw new Error('File CRC mismatch');
         }
         const instance = new this();
-        instance._definitions = {};
-        instance._devFields = {};
         let offt = headerLength;
+        const definitions = {};
         while (offt < dataEnd) {
             const rBuf = new Uint8Array(buf.buffer, buf.byteOffset + offt);
-            const msg = bin.readMessage(rBuf, instance._definitions, instance._devFields);
+            const msg = bin.readMessage(rBuf, definitions, instance._devFields);
             if (msg.type === 'data') {
                 instance.messages.push(msg);
             }
@@ -71,8 +71,8 @@ export default class FitParser {
         const profile_version = profile_version_major * 100 + profile_version_minor;
         headerBuf.set(bin.uint16leBytes(profile_version), 2);
         headerBuf.set('.FIT'.split('').map(x => x.charCodeAt(0)), 8);
-        const dataBuf = bin.joinBuffers(this.messages.map((x, i) =>
-            bin.writeMessageTuple(x, i, this._definitions, this._devFields)));
+        const localMsgTypes = {};
+        const dataBuf = bin.joinBuffers(this.messages.map(x => bin.writeMessage(x, localMsgTypes, this._devFields)));
         headerBuf.set(bin.uint32leBytes(dataBuf.byteLength), 4);
         const headerCrc = bin.calculateCRC(headerBuf, 0, 12);
         headerBuf.set(bin.uint16leBytes(headerCrc), 12);

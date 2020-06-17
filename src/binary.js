@@ -195,11 +195,8 @@ function getInvalidValue(type) {
     return bt.invalid;
 }
 
-export function writeMessageTuple(msg, localMessageType, definitions, devFields) {
+export function writeMessage(msg, localMsgTypes, devFields) {
     const buffers = [];
-    const dataHeader = new Uint8Array(1);
-    dataHeader[0] = localMessageType & 0xf;
-    buffers.push(dataHeader);
     for (const fDef of msg.mDef.fieldDefs) {
         const value = msg.fields[fDef.attrs.field];
         if (value == null) {
@@ -214,24 +211,33 @@ export function writeMessageTuple(msg, localMessageType, definitions, devFields)
             buffers.push(buf);
         }
     }
-    const defBuf = new Uint8Array(6 + (msg.mDef.fieldDefs.length * 3)); // XXX does not support devfields
-    const defView = new DataView(defBuf.buffer, defBuf.byteOffset, defBuf.byteLength);
-    const definitionFlag = 0x40;
-    defView.setUint8(0, (localMessageType & 0xf) | definitionFlag);
-    const littleEndian = msg.mDef.littleEndian;
-    defView.setUint8(2, littleEndian ? 0 : 1);
-    defView.setUint16(3, msg.mDef.globalMessageNumber, littleEndian);
-    defView.setUint8(5, msg.mDef.fieldDefs.length);
-    let offt = 6;
-    for (const fDef of msg.mDef.fieldDefs) {
-        if (fDef.isDevField) {
-            throw new Error("XXX dev fields not supported yet");
+    const mDefSig = JSON.stringify(msg.mDef);
+    const hasMatchingDef = mDefSig in localMsgTypes;
+    const localMsgType = hasMatchingDef ? localMsgTypes[mDefSig] : Object.keys(localMsgTypes).length;
+    const dataHeader = new Uint8Array(1);
+    dataHeader[0] = localMsgType & 0xf;
+    buffers.unshift(dataHeader);
+    if (!hasMatchingDef) {
+        localMsgTypes[mDefSig] = localMsgType;
+        const defBuf = new Uint8Array(6 + (msg.mDef.fieldDefs.length * 3)); // XXX does not support devfields
+        const defView = new DataView(defBuf.buffer, defBuf.byteOffset, defBuf.byteLength);
+        const definitionFlag = 0x40;
+        defView.setUint8(0, (localMsgType & 0xf) | definitionFlag);
+        const littleEndian = msg.mDef.littleEndian;
+        defView.setUint8(2, littleEndian ? 0 : 1);
+        defView.setUint16(3, msg.mDef.globalMessageNumber, littleEndian);
+        defView.setUint8(5, msg.mDef.fieldDefs.length);
+        let offt = 6;
+        for (const fDef of msg.mDef.fieldDefs) {
+            if (fDef.isDevField) {
+                throw new Error("XXX dev fields not supported yet");
+            }
+            defView.setUint8(offt++, fDef.fDefNum);
+            defView.setUint8(offt++, fDef.size);
+            defView.setUint8(offt++, fDef.baseTypeId);
         }
-        defView.setUint8(offt++, fDef.fDefNum);
-        defView.setUint8(offt++, fDef.size);
-        defView.setUint8(offt++, fDef.baseTypeId);
+        buffers.unshift(defBuf);
     }
-    buffers.unshift(defBuf);
     return joinBuffers(buffers);
 }
 
