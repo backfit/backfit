@@ -1,5 +1,5 @@
 import FitParser from './fit-parser.js';
 
-window.backfit = {
+window.jsfit = {
     FitParser
 };
