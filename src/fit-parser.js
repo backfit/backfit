@@ -96,7 +96,7 @@ export default class FitParser {
             if (!attrs) {
                 throw new TypeError(`Invalid field: ${globalMessage}[${key}]`);
             }
-            const baseTypeName = fit.typesIndex[attrs.type] ? fit.typesIndex[attrs.type].type : attrs.type;
+            const baseTypeName = (fit.typesIndex[attrs.type] ? fit.typesIndex[attrs.type].type : attrs.type).split('_array')[0];
             const baseType = fit.getBaseTypeByName(baseTypeName);
             const baseTypeId = fit.typesIndex.fit_base_type.values[baseTypeName];
             const endianFlag = 0x80;
