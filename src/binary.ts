@@ -250,14 +250,13 @@ export function readRecord(blob: Uint8Array, messageTypes: MessageTypes,
   let localMessageType = recordHeader & 15;
 
   if((recordHeader & CompressedHeaderMask) === CompressedHeaderMask){
-      //compressed timestamp
+    //compressed timestamp
 
-      var timeoffset = recordHeader & CompressedTimeMask;
-      timestamp += ((timeoffset - lastTimeOffset) & CompressedTimeMask);
-      lastTimeOffset = timeoffset;
+    var timeoffset = recordHeader & CompressedTimeMask;
+    timestamp += ((timeoffset - lastTimeOffset) & CompressedTimeMask);
+    lastTimeOffset = timeoffset;
 
-
-  if ((recordHeader & 64) === 64) {	        localMessageType = ((recordHeader & CompressedLocalMesgNumMask) >> 5);
+    localMessageType = ((recordHeader & CompressedLocalMesgNumMask) >> 5);
   } else if ((recordHeader & 64) === 64) {
     // is definition message
     // startIndex + 1 is reserved
@@ -396,12 +395,12 @@ export function readRecord(blob: Uint8Array, messageTypes: MessageTypes,
     //we need to keep the raw timestamp value so we can calculate subsequent timestamp16 fields
     if(fields.timestamp){
         monitoring_timestamp = fields.timestamp;
-        fields.timestamp = new Date(fields.timestamp * 1000 + GarminTimeOffset);
+        fields.timestamp = new Date(fields.timestamp * 1000 + GarminTimeOffset).getTime();
     }
     if(fields.timestamp16 && !fields.timestamp){
         monitoring_timestamp += ( fields.timestamp16 - ( monitoring_timestamp & 0xFFFF ) ) & 0xFFFF;
         //fields.timestamp = monitoring_timestamp;
-        fields.timestamp = new Date(monitoring_timestamp * 1000 + GarminTimeOffset);
+        fields.timestamp = new Date(monitoring_timestamp * 1000 + GarminTimeOffset).getTime();
     }
   }
 

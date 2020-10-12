@@ -13,12 +13,13 @@ fs.readFile(file, function (err, content) {
     mode: 'list',
   });
 
-  backfit.parse(content)
-    .then(function (data) {
-      console.log(data.records[0]);
-      // console.log(data);
-    })
-    .catch(function (err) {
-      console.log(err);
-    })
+  // Get the results
+  try {
+    const data = backfit.parse(content);
+    console.log(data.profileVersion);
+    console.log(data.protocolVersion);
+    console.log(data.records[0]);
+  } catch (e) {
+    console.log(e);
+  }
 });

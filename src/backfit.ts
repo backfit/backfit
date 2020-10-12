@@ -28,7 +28,7 @@ export default class BackFIT {
     }
   }
 
-  async parse(content: Buffer): Promise<FitParserResult> {
+  parse(content: Buffer): FitParserResult {
     const blob = new Uint8Array(getArrayBuffer(content));
 
     if (blob.length < 12) {
@@ -263,6 +263,6 @@ export default class BackFIT {
       fitObj.definitions = definitions;
     }
 
-    return await fitObj;
+    return fitObj;
   }
 }

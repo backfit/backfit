@@ -5,5 +5,5 @@ import { FitParserOptions, FitParserResult } from './types';
 export default class BackFIT {
     options: FitParserOptions;
     constructor(options?: FitParserOptions);
-    parse(content: Buffer): Promise<FitParserResult>;
+    parse(content: Buffer): FitParserResult;
 }

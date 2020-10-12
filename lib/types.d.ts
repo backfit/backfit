@@ -2,6 +2,10 @@ export interface Activity {
     sessions: Fields;
     events: Fields;
     hrv: Fields;
+    sports: Fields;
+    device_infos: Fields[];
+    developer_data_ids: Fields[];
+    field_descriptions: Fields[];
 }
 export interface ReadResult {
     messageType: string;
@@ -20,7 +24,9 @@ export interface FitParserResult {
     hrv?: Fields;
     dive_gases?: Fields;
     course_points?: Fields;
-    [default_message: string]: Fields | undefined;
+    protocolVersion?: number;
+    profileVersion?: number;
+    [default_message: string]: Fields | number | undefined;
 }
 export interface FitParserOptions {
     force?: boolean;
