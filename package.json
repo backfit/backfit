@@ -78,5 +78,8 @@
     "example-output": "npm run build; node examples/example.js examples/example.fit > examples/output.json",
     "example": "npm run build; node examples/example.js examples/example.fit"
   },
-  "version": "1.0.0"
+  "version": "1.8.4",
+  "dependencies": {
+    "buffer": "^5.1.0"
+  }
 }

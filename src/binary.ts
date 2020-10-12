@@ -13,6 +13,14 @@ export function addEndian(littleEndian: boolean, bytes: number[]): number {
 
   return result;
 }
+
+var timestamp = 0;
+var lastTimeOffset = 0;
+const CompressedTimeMask = 31;
+const CompressedLocalMesgNumMask = 0x60;
+const CompressedHeaderMask = 0x80;
+const GarminTimeOffset = 631065600000;
+let monitoring_timestamp = 0;
   
 function readData(blob: Uint8Array, fDef: Def, startIndex: number,
   options: FitParserOptions): number|number[]|string {
@@ -41,6 +49,12 @@ function readData(blob: Uint8Array, fDef: Def, startIndex: number,
           return dataView.getFloat32(0, fDef.littleEndian);
         case 'float64':
           return dataView.getFloat64(0, fDef.littleEndian);
+        case 'uint32_array':
+          const array32 = [];
+          for (let i = 0; i < fDef.size; i += 4) {
+              array32.push(dataView.getUint32(i, fDef.littleEndian));
+          }
+          return array32;
         case 'uint16_array': {
           const array = [];
           for (let i = 0; i < fDef.size; i += 2) {
@@ -87,15 +101,16 @@ function formatByType(data: any, type?: string,
   switch (type) {
     case 'date_time':
     case 'local_date_time':
-      return new Date((data * 1000) + 631065600000);
+      return new Date((data * 1000) + GarminTimeOffset);
     case 'sint32':
       return data * FITSDK.scConst;
+    case 'uint8':
     case 'sint16':
     case 'uint32':
     case 'uint16':
       return scale ? data / (scale as number) + off : data;
+    case 'uint32_array':
     case 'uint16_array':
-      const data_array = data as number[]
       return data.map((dataItem: number) => {
         if (scale) {
           return dataItem / (scale as number) + off;
@@ -232,9 +247,18 @@ export function readRecord(blob: Uint8Array, messageTypes: MessageTypes,
   startIndex: number, options: FitParserOptions,
   startDate: number, pausedTime: number): ReadResult {
   const recordHeader = blob[startIndex];
-  const localMessageType = recordHeader & 15;
+  let localMessageType = recordHeader & 15;
 
-  if ((recordHeader & 64) === 64) {
+  if((recordHeader & CompressedHeaderMask) === CompressedHeaderMask){
+      //compressed timestamp
+
+      var timeoffset = recordHeader & CompressedTimeMask;
+      timestamp += ((timeoffset - lastTimeOffset) & CompressedTimeMask);
+      lastTimeOffset = timeoffset;
+
+
+  if ((recordHeader & 64) === 64) {	        localMessageType = ((recordHeader & CompressedLocalMesgNumMask) >> 5);
+  } else if ((recordHeader & 64) === 64) {
     // is definition message
     // startIndex + 1 is reserved
 
@@ -270,6 +294,7 @@ export function readRecord(blob: Uint8Array, messageTypes: MessageTypes,
       mTypeDef.fieldDefs.push(fDef);
     }
 
+    // numberOfDeveloperDataFields = 0 so it wont crash here and wont loop
     for (let i = 0; i < numberOfDeveloperDataFields; i++) {
       // If we fail to parse then try catch
       try {
@@ -364,6 +389,19 @@ export function readRecord(blob: Uint8Array, messageTypes: MessageTypes,
       developerFields[fields.developer_data_index] =
         developerFields[fields.developer_data_index] || [];
       developerFields[fields.developer_data_index][fields.field_definition_number] = fields;
+    }
+  }
+
+  if (message.name === 'monitoring') {
+    //we need to keep the raw timestamp value so we can calculate subsequent timestamp16 fields
+    if(fields.timestamp){
+        monitoring_timestamp = fields.timestamp;
+        fields.timestamp = new Date(fields.timestamp * 1000 + GarminTimeOffset);
+    }
+    if(fields.timestamp16 && !fields.timestamp){
+        monitoring_timestamp += ( fields.timestamp16 - ( monitoring_timestamp & 0xFFFF ) ) & 0xFFFF;
+        //fields.timestamp = monitoring_timestamp;
+        fields.timestamp = new Date(monitoring_timestamp * 1000 + GarminTimeOffset);
     }
   }
 

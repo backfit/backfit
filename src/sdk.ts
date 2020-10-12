@@ -1,33 +1,60 @@
 import { Sdk } from './sdkhelpers';
 
+// some unit conversion constants
+const metersInOneKilometer = 1000;
+const secondsInOneHour = 3600;
+// according to https://en.wikipedia.org/wiki/Mile
+const metersInOneMile = 1609.344;
+
 export const FITSDK: Sdk = {
   scConst: 180 / 2 ** 31,
   options: {
     speedUnits: {
-      'mph': {
-        multiplier: 3.6 / 1.4,
+      // native speed unit: meters per second [m/s]
+      'm/s': {
+        multiplier: 1,
         offset: 0,
       },
+      // miles per hour [mph]
+      mph: {
+        multiplier: secondsInOneHour / metersInOneMile,
+        offset: 0,
+      },
+      // kilometers per hour [km/h]
       'km/h': {
-        multiplier: 3.6,
+        multiplier: secondsInOneHour / metersInOneKilometer,
         offset: 0,
       },
     },
     lengthUnits: {
-      'mi': {
-        multiplier: 1 / 1609.344,
+      // native length unit: meters [m]
+      m: {
+        multiplier: 1,
         offset: 0,
       },
-      'km': {
-        multiplier: 1 / 1000,
+      // (international) mile [mi]
+      mi: {
+        multiplier: 1 / metersInOneMile,
+        offset: 0,
+      },
+      // kilometer [km]
+      km: {
+        multiplier: 1 / metersInOneKilometer,
         offset: 0,
       },
     },
     temperatureUnits: {
+      // native temperature unit: degree Celsius [°C]
+      '°C': {
+        multiplier: 1,
+        offset: 0,
+      },
+      // kelvin [K]
       kelvin: {
         multiplier: 1,
         offset: -273.15,
       },
+      // degree fahrenheit [°F]
       fahrenheit: {
         multiplier: 9 / 5,
         offset: 32,
@@ -255,10 +282,10 @@ export const FITSDK: Sdk = {
       62: { field: 'max_pos_vertical_speed', type: 'uint16', scale: 1000, offset: 0, units: 'm/s' },
       63: { field: 'max_neg_vertical_speed', type: 'uint16', scale: 1000, offset: 0, units: 'm/s' },
       64: { field: 'min_heart_rate', type: 'uint8', scale: null, offset: 0, units: 'bpm' },
-      65: { field: 'time_in_hr_zone', type: 'uint32', scale: 1000, offset: 0, units: 's' },
-      66: { field: 'time_in_speed_zone', type: 'uint32', scale: 1000, offset: 0, units: 's' },
-      67: { field: 'time_in_cadence_zone', type: 'uint32', scale: 1000, offset: 0, units: 's' },
-      68: { field: 'time_in_power_zone', type: 'uint32', scale: 1000, offset: 0, units: 's' },
+      65: { field: 'time_in_hr_zone', type: 'uint32_array', scale: 1000, offset: 0, units: 's' },
+      66: { field: 'time_in_speed_zone', type: 'uint32_array', scale: 1000, offset: 0, units: 's' },
+      67: { field: 'time_in_cadence_zone', type: 'uint32_array', scale: 1000, offset: 0, units: 's' },
+      68: { field: 'time_in_power_zone', type: 'uint32_array', scale: 1000, offset: 0, units: 's' },
       69: { field: 'avg_lap_time', type: 'uint32', scale: 1000, offset: 0, units: 's' },
       70: { field: 'best_lap_index', type: 'uint16', scale: null, offset: 0, units: '' },
       71: { field: 'min_altitude', type: 'uint16', scale: 5, offset: -500, units: 'm' },
@@ -368,10 +395,10 @@ export const FITSDK: Sdk = {
       54: { field: 'avg_neg_vertical_speed', type: 'uint16', scale: 1000, offset: 0, units: 'm/s' },
       55: { field: 'max_pos_vertical_speed', type: 'uint16', scale: 1000, offset: 0, units: 'm/s' },
       56: { field: 'max_neg_vertical_speed', type: 'uint16', scale: 1000, offset: 0, units: 'm/s' },
-      57: { field: 'time_in_hr_zone', type: 'uint32', scale: 1000, offset: 0, units: 's' },
-      58: { field: 'time_in_speed_zone', type: 'uint32', scale: 1000, offset: 0, units: 's' },
-      59: { field: 'time_in_cadence_zone', type: 'uint32', scale: 1000, offset: 0, units: 's' },
-      60: { field: 'time_in_power_zone', type: 'uint32', scale: 1000, offset: 0, units: 's' },
+      57: { field: 'time_in_hr_zone', type: 'uint32_array', scale: 1000, offset: 0, units: 's' },
+      58: { field: 'time_in_speed_zone', type: 'uint32_array', scale: 1000, offset: 0, units: 's' },
+      59: { field: 'time_in_cadence_zone', type: 'uint32_array', scale: 1000, offset: 0, units: 's' },
+      60: { field: 'time_in_power_zone', type: 'uint32_array', scale: 1000, offset: 0, units: 's' },
       61: { field: 'repetition_num', type: 'uint16', scale: null, offset: 0, units: '' },
       62: { field: 'min_altitude', type: 'uint16', scale: 5, offset: -500, units: 'm' },
       63: { field: 'min_heart_rate', type: 'uint8', scale: null, offset: 0, units: 'bpm' },
@@ -655,9 +682,76 @@ export const FITSDK: Sdk = {
       8: { field: 'status', type: 'bp_status', scale: null, offset: 0, units: '' },
       9: { field: 'user_profile_index', type: 'message_index', scale: null, offset: 0, units: '' },
     },
+    55: {
+      name: 'monitoring',
+      253: { field: 'timestamp', type: 'uint32', scale: null, offset: 0, units: '' },
+      0: { field: 'device_index', type: 'device_index', scale: null, offset: 0, units: '' },
+      1: { field: 'calories', type: 'uint16', scale: null, offset: 0, units: 'kcal' },
+      2: { field: 'distance', type: 'float32', scale: null, offset: 0, units: 'm' },
+      3: { field: 'cycles', type: 'float32', scale: null, offset: 0, units: 'cycles' },
+      4: { field: 'active_time', type: 'float32', scale: null, offset: 0, units: 's' },
+      5: { field: 'activity_type', type: 'activity_type', scale: null, offset: 0, units: '' },
+      6: { field: 'activity_subtype', type: 'activity_subtype', scale: null, offset: 0, units: '' },
+      7: { field: 'activity_level', type: 'activity_level', scale: null, offset: 0, units: 's' },
+      8: { field: 'distance16', type: 'uint16', scale: null, offset: 0, units: 'm' },
+      9: { field: 'cycles16', type: 'uint16', scale: null, offset: 0, units: 'cycles' },
+      10: { field: 'active_time16', type: 'uint16', scale: null, offset: 0, units: '' },
+      11: { field: 'local_timestamp', type: 'uint32', scale: null, offset: 0, units: '' },
+      12: { field: 'temperature', type: 'float32', scale: null, offset: 0, units: 'C' },
+      14: { field: 'temperature_min', type: 'float32', scale: null, offset: 0, units: 'C' },
+      15: { field: 'temperature_max', type: 'float32', scale: null, offset: 0, units: 'C' },
+      16: { field: 'activity_time', type: 'int32', scale: null, offset: 0, units: '' },
+      19: { field: 'active_calories', type: 'uint16', scale: null, offset: 0, units: 'kcal' },
+      24: { field: 'current_activity_type_intensity', type: 'uint8', scale: null, offset: 0, units: '' },
+      25: { field: 'timestamp_min8', type: 'uint8', scale: null, offset: 0, units: '' },
+      26: { field: 'timestamp16', type: 'uint16', scale: null, offset: 0, units: '' },
+      27: { field: 'heart_rate', type: 'uint8', scale: null, offset: 0, units: 'bpm' },
+      28: { field: 'intensity', type: 'uint8', scale: null, offset: 0, units: '' },
+      29: { field: 'duration_min', type: 'uint16', scale: null, offset: 0, units: '' },
+      30: { field: 'duration', type: 'uint32', scale: null, offset: 0, units: '' },
+      31: { field: 'ascent', type: 'float32', scale: null, offset: 0, units: 'm' },
+      32: { field: 'descent', type: 'float32', scale: null, offset: 0, units: 'm' },
+      33: { field: 'moderate_activity_minutes', type: 'uint16', scale: null, offset: 0, units: '' },
+      34: { field: 'vigorous_activity_minutes', type: 'uint16', scale: null, offset: 0, units: '' },
+    },
     78: {
       name: 'hrv',
       0: { field: 'time', type: 'uint16_array', scale: 1000, offset: 0, units: 's' },
+    },
+    101: {
+      name: 'length',
+      254: { field: 'message_index', type: 'message_index', scale: null, offset: 0, units: '' },
+      253: { field: 'timestamp', type: 'date_time', scale: null, offset: 0, units: 's' },
+      0: { field: 'event', type: 'event', scale: null, offset: 0, units: '' },
+      1: { field: 'event_type', type: 'event_type', scale: null, offset: 0, units: '' },
+      2: { field: 'start_time', type: 'date_time', scale: null, offset: 0, units: '' },
+      3: { field: 'total_elapsed_time', type: 'uint32', scale: 1000, offset: 0, units: 's' },
+      4: { field: 'total_timer_time', type: 'uint32', scale: 1000, offset: 0, units: 's' },
+      5: { field: 'total_strokes', type: 'uint16', scale: null, offset: 0, units: 'strokes' },
+      6: { field: 'avg_speed', type: 'uint16', scale: 1000, offset: 0, units: 'm/s' },
+      7: { field: 'swim_stroke', type: 'swim_stroke', scale: null, offset: 0, units: 'swim_stroke' },
+      9: { field: 'avg_swimming_cadence', type: 'uint8', scale: null, offset: 0, units: 'strokes/min' },
+      10: { field: 'event_group', type: 'uint8', scale: null, offset: 0, units: '' },
+      11: { field: 'total_calories', type: 'uint16', scale: null, offset: 0, units: 'kcal' },
+      12: { field: 'length_type', type: 'length_type', scale: null, offset: 0, units: 'length_type' },
+      18: { field: 'player_score', type: 'uint16', scale: null, offset: 0, units: '' },
+      19: { field: 'opponent_score', type: 'uint16', scale: null, offset: 0, units: '' },
+      20: { field: 'stroke_count', type: 'uint16', scale: null, offset: 0, units: 'counts' },
+      21: { field: 'zone_count', type: 'uint16', scale: null, offset: 0, units: 'counts' },
+    },
+    103: {
+      name: 'monitoring_info',
+      253: { field: 'timestamp', type: 'date_time', scale: null, offset: 0, units: '' },
+      0: { field: 'local_timestamp', type: 'uint32', scale: null, offset: 0, units: '' },
+      1: { field: 'activity_type', type: 'activity_type', scale: null, offset: 0, units: '' },
+      3: { field: 'cycles_to_distance', type: 'float32', scale: null, offset: 0, units: 'cycles' },
+      4: { field: 'cycles_to_calories', type: 'float32', scale: null, offset: 0, units: 'kcal' },
+      5: { field: 'resting_metabolic_rate', type: 'uint16', scale: null, offset: 0, units: '' },
+    },
+    108: {
+      name: 'o_hr_settings',
+      253: { field: 'timestamp', type: 'date_time', scale: null, offset: 0, units: '' },
+      0: { field: 'enabled', type: 'byte', scale: null, offset: 0, units: '' },
     },
     206: {
       name: 'field_description',
@@ -675,6 +769,14 @@ export const FITSDK: Sdk = {
       //13: { field: 'fit_base_unit_id', type: 'uint16', scale: null, offset: 0, units: '' },
       // 14: { field: 'native_mesg_num', type: 'mesg_num', scale: null, offset: 0, units: '' },
       15: { field: 'native_field_num', type: 'uint8', scale: null, offset: 0, units: '' },
+    },
+    227: {
+      name: 'stress_level',
+      0: { field: 'stress_level_value', type: 'uint16', scale: null, offset: 0, units: '' },
+      1: { field: 'stress_level_time', type: 'date_time', scale: null, offset: 0, units: 's' },
+      2: { field: 'field_two', type: 'sint8', scale: null, offset: 0, units: '' },
+      3: { field: 'body_battery', type: 'uint8', scale: null, offset: 0, units: '' },
+      4: { field: 'field_four', type: 'uint8', scale: null, offset: 0, units: '' },
     },
     207: {
       name: 'developer_data_id',
@@ -852,6 +954,8 @@ export const FITSDK: Sdk = {
       262: 'dive_alarm',
       264: 'exercise_title',
       268: 'dive_summary',
+      285: 'jump',
+      317: 'climb_pro',
       65280: 'mfg_range_min',
       65534: 'mfg_range_max',
     },
