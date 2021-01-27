@@ -463,7 +463,7 @@ export const FIT = {
       10: { field: 'resistance', type: 'uint8', scale: null, offset: 0, units: '' },
       11: { field: 'time_from_course', type: 'sint32', scale: 1000, offset: 0, units: 's' },
       12: { field: 'cycle_length', type: 'uint8', scale: 100, offset: 0, units: 'm' },
-      13: { field: 'temperature', type: 'uint8', scale: null, offset: 0, units: 'C' },
+      13: { field: 'temperature', type: 'sint8', scale: null, offset: 0, units: 'C' },
       17: { field: 'speed_1s', type: 'uint8', scale: 16, offset: 0, units: 'm/s' },
       18: { field: 'cycles', type: 'uint8', scale: null, offset: 0, units: 'cycles' },
       19: { field: 'total_cycles', type: 'uint32', scale: null, offset: 0, units: 'cycles' },

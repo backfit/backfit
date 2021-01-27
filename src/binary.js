@@ -21,7 +21,7 @@ const GarminTimeOffset = 631065600000;
 let monitoring_timestamp = 0;
 
 function readData(blob, fDef, startIndex, options) {
-    if (fDef.endianAbility === true) {
+    if (fDef.type !== 'string' && fDef.type !== 'byte_array') {
         const temp = [];
         for (let i = 0; i < fDef.size; i++) {
             temp.push(blob[startIndex + i]);
@@ -32,6 +32,10 @@ function readData(blob, fDef, startIndex, options) {
 
         try {
             switch (fDef.type) {
+                case 'sint8':
+                    return dataView.getInt8(0, fDef.littleEndian);
+                case 'uint8':
+                    return dataView.getUnt8(0, fDef.littleEndian);
                 case 'sint16':
                     return dataView.getInt16(0, fDef.littleEndian);
                 case 'uint16':
