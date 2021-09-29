@@ -47,7 +47,7 @@ function readData(blob, fDef, startIndex, options) {
                 case 'sint8':
                     return dataView.getInt8(0, fDef.littleEndian);
                 case 'uint8':
-                    return dataView.getUnt8(0, fDef.littleEndian);
+                    return dataView.getUint8(0, fDef.littleEndian);
                 case 'sint16':
                     return dataView.getInt16(0, fDef.littleEndian);
                 case 'uint16':
